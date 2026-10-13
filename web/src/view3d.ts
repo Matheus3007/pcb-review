@@ -20,12 +20,19 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { Bundle, Footprint, Model3D, Pad, XY } from "./types";
+import { buildCopper } from "./view3d-copper";
 
 export interface View3D {
   dispose(): void;
   highlight(refs: string[]): void;
   resize(): void;
   view(kind: "iso" | "top" | "bottom"): void;
+  /** Selected net: drawn as a bright overlay (through the board in X-ray mode). */
+  setNet(net: string | null): void;
+  /** X-ray: translucent board, every copper layer in its 2D colour, parts dimmed. */
+  setXray(on: boolean): void;
+  setParts(on: boolean): void;
+  setCopper(on: boolean): void;
 }
 
 const DEG = Math.PI / 180;
@@ -217,6 +224,7 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
   // ---- board ----
   const boardGroup = new THREE.Group();
   scene.add(boardGroup);
+  const boardMats: THREE.MeshStandardMaterial[] = [];
   if (bundle.outline.length && bundle.outline[0].length > 2) {
     const shape = new THREE.Shape(bundle.outline[0].map(w));
     for (const hole of bundle.outline.slice(1)) if (hole.length > 2) shape.holes.push(new THREE.Path(hole.map(w)));
@@ -225,10 +233,12 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
     const capMat = own(new THREE.MeshStandardMaterial({ color: COLORS.maskBottom, roughness: 0.6 }));
     const sideMat = own(new THREE.MeshStandardMaterial({ color: COLORS.edge, roughness: 0.85 }));
     boardGroup.add(new THREE.Mesh(g, [capMat, sideMat]));
+    boardMats.push(capMat, sideMat);
     const topG = own(new THREE.ShapeGeometry(shape, 12));
     topG.translate(0, 0, 0.002);
     const topMat = own(new THREE.MeshStandardMaterial({ color: COLORS.maskTop, roughness: 0.5, metalness: 0.0 }));
     boardGroup.add(new THREE.Mesh(topG, topMat));
+    boardMats.push(topMat);
   }
 
   // pads (one merged mesh)
@@ -280,6 +290,11 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
     });
     boardGroup.add(holeInst, ringInst);
   }
+
+  // tracks, zone fills (under the mask), X-ray layers, selected net
+  const copper = buildCopper(bundle, thickness);
+  owned.push(copper);
+  scene.add(copper.group);
 
   // silkscreen (optional in the bundle)
   const silkPts: number[] = [];
@@ -459,6 +474,14 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
     }
   });
 
+  let xray = false;
+  let partsOn = true;
+  function applyParts() {
+    // X-ray hides the parts so the copper underneath can be read; highlighted parts stay visible
+    for (const [ref, g] of fpGroups) g.visible = partsOn && (!xray || highlighted.has(ref));
+    needsRender = true;
+  }
+
   const api = {
     resize,
     highlight(refs: string[]) {
@@ -472,7 +495,7 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
           needsRender = true;
         });
       highlighted = next;
-      needsRender = true;
+      applyParts();
     },
     dispose() {
       if (disposed) return;
@@ -484,6 +507,29 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
       renderer.dispose();
       canvas.remove();
       delete el.dataset.view3d;
+    },
+    setNet(net: string | null) {
+      copper.setNet(net);
+      needsRender = true;
+    },
+    setXray(on: boolean) {
+      xray = on;
+      for (const m of boardMats) {
+        m.transparent = on;
+        m.opacity = on ? 0.18 : 1;
+        m.depthWrite = !on;
+        m.needsUpdate = true;
+      }
+      copper.setXray(on);
+      applyParts();
+    },
+    setParts(on: boolean) {
+      partsOn = on;
+      applyParts();
+    },
+    setCopper(on: boolean) {
+      copper.setVisible(on);
+      needsRender = true;
     },
     /** Camera presets. */
     view(kind: "iso" | "top" | "bottom") {

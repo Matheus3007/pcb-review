@@ -4,7 +4,7 @@ Review the PCBs that [pcb-lab](../pcb-lab) generates in a browser, without KiCad
 
 - **Copper**: 2D view of every copper layer, inner layers included. Pan and zoom, toggle layers, view from the bottom. Click a track, via, pad or zone to highlight its net.
 - **Side pane**: the selected net with its components and pins, and each part's **datasheet** in an embedded PDF viewer. The viewer opens at the page for the pin (pin table or pinout), with the pin name highlighted.
-- **3D**: the assembled board in three.js, using the real KiCad/EasyEDA STEP models converted to GLB.
+- **3D**: the assembled board in three.js, using the real KiCad/EasyEDA STEP models converted to GLB. Tracks and pours show under the solder mask. **X-ray** (key `x`) makes the board translucent and shows every copper layer in its 2D colour. The selected net is drawn on top, with via barrels where it changes layer.
 - **BOM** with LCSC/JLC links, and **Checks**: pcb-lab's check report plus KiCad DRC. Click a designator or a DRC marker to jump to it in the copper view.
 
 Deep links work: `#net=CRSF_RX&ref=U1&pin=19`, `#tab=3d`. Several boards can be hosted side by side; `?board=<name>` picks one.

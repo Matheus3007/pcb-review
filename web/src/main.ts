@@ -128,6 +128,7 @@ function setup() {
     if ((e.target as HTMLElement).closest("input, select, textarea")) return;
     if (e.key === "Escape") { state.net = state.ref = state.pin = null; apply(); }
     if (e.key === "f") view2d.fit();
+    if (e.key === "x" && state.tab === "3d") $<HTMLInputElement>("[data-t3=xray]")?.click();
     if (e.key === "b") { flip(!view2d.flipped); syncLayerBar(); }
     const n = parseInt(e.key, 10);
     if (n >= 1 && n <= bundle.layers.length) { view2d.active = bundle.layers[n - 1].id; view2d.visible.add(view2d.active); syncLayerBar(); view2d.draw(); }
@@ -227,6 +228,7 @@ function apply(pushHash = true) {
   view2d.resize();
   if (state.tab === "3d") ensure3d();
   view3d?.highlight(refsOnSelection());
+  view3d?.setNet(state.net);
   if (state.tab === "3d") view3d?.resize();
   for (const tr of document.querySelectorAll<HTMLElement>("#pane-bom tr[data-refs]")) {
     tr.classList.toggle("sel", !!state.ref && tr.dataset.refs!.split(",").includes(state.ref));
@@ -272,12 +274,26 @@ async function ensure3d() {
   host.innerHTML = `<div class="loading">Loading 3D…</div>`;
   try {
     const mod = await import("./view3d");
-    host.innerHTML = `<div class="view3d-bar"><button data-view="iso">Iso</button><button data-view="top">Top</button><button data-view="bottom">Bottom</button></div>`;
+    host.innerHTML = `<div class="view3d-bar">
+        <button data-view="iso">Iso</button><button data-view="top">Top</button><button data-view="bottom">Bottom</button>
+        <span class="sep"></span>
+        <label class="toggle"><input type="checkbox" data-t3="parts" checked> Parts</label>
+        <label class="toggle"><input type="checkbox" data-t3="copper" checked> Copper</label>
+        <label class="toggle" title="Translucent board, all copper layers in their 2D colours (key x)"><input type="checkbox" data-t3="xray"> X-ray</label>
+      </div>`;
     view3d = mod.mountView3D(host, bundle, base);
-    host.querySelector(".view3d-bar")!.addEventListener("click", (e) => {
+    const bar = host.querySelector(".view3d-bar")!;
+    bar.addEventListener("click", (e) => {
       const v = (e.target as HTMLElement).closest<HTMLElement>("[data-view]")?.dataset.view;
       if (v) view3d?.view(v as "iso" | "top" | "bottom");
     });
+    bar.addEventListener("change", (e) => {
+      const t = e.target as HTMLInputElement;
+      if (t.dataset.t3 === "parts") view3d?.setParts(t.checked);
+      if (t.dataset.t3 === "copper") view3d?.setCopper(t.checked);
+      if (t.dataset.t3 === "xray") view3d?.setXray(t.checked);
+    });
+    view3d.setNet(state.net);
     view3d.highlight(refsOnSelection());
   } catch (err) {
     host.innerHTML = `<div class="loading">3D view failed: ${esc(String(err))}</div>`;

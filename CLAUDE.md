@@ -34,4 +34,4 @@ make shots                        # Playwright screenshots of the main views -> 
 - The exporter cache (STEP→GLB, pin index) lives in `~/.cache/pcb-review`, keyed by content hash.
 - KiCad 3D models are resolved from `/mnt/c/Program Files/KiCad/<ver>/share/kicad/3dmodels` (override with `PCB_REVIEW_KICAD_3D`).
 - Exporter tests run against the real reference board (rebot-ctrl-v2) and skip when pcb-lab is missing. Pad positions and nets are cross-checked against pcb-lab's `reports/board.json`.
-- Web: vanilla TS, no framework. `main.ts` (shell, state, side pane, BOM, checks), `view2d.ts` (canvas), `pdfview.ts` (pdf.js), `view3d.ts` (three.js, lazy-loaded). Colours are CSS tokens in `style.css`; the copper canvas stays dark in both themes.
+- Web: vanilla TS, no framework. `main.ts` (shell, state, side pane, BOM, checks), `view2d.ts` (canvas), `pdfview.ts` (pdf.js), `view3d.ts` (three.js, lazy-loaded) + `view3d-copper.ts` (tracks, pours, X-ray, net overlay). Colours are CSS tokens in `style.css`; the copper canvas stays dark in both themes.

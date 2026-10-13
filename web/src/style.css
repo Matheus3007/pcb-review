@@ -220,7 +220,11 @@ table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
   .layerbar { padding: 6px 12px; }
 }
 
-.view3d-bar { position: absolute; top: 10px; left: 10px; z-index: 2; display: flex; gap: 4px; }
+.view3d-bar {
+  position: absolute; top: 10px; left: 10px; z-index: 2; display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+  background: color-mix(in srgb, var(--panel) 85%, transparent); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px;
+}
+.view3d-bar .toggle { color: var(--text); margin-left: 6px; }
 .view3d-bar button {
   background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 13px;
 }
