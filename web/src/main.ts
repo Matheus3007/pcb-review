@@ -16,7 +16,7 @@ let bundle: Bundle;
 let base = "";             // URL prefix of the bundle (ends with "/")
 let pinindex: Record<string, PinIndexPart> = {};
 let view2d: View2D;
-let view3d: { highlight(refs: string[]): void; resize(): void; dispose(): void } | null = null;
+let view3d: import("./view3d").View3D | null = null;
 let pdf: PdfView | null = null;
 const fpByRef = new Map<string, Footprint>();
 
@@ -128,7 +128,7 @@ function setup() {
     if ((e.target as HTMLElement).closest("input, select, textarea")) return;
     if (e.key === "Escape") { state.net = state.ref = state.pin = null; apply(); }
     if (e.key === "f") view2d.fit();
-    if (e.key === "b") { view2d.setFlipped(!view2d.flipped); syncLayerBar(); }
+    if (e.key === "b") { flip(!view2d.flipped); syncLayerBar(); }
     const n = parseInt(e.key, 10);
     if (n >= 1 && n <= bundle.layers.length) { view2d.active = bundle.layers[n - 1].id; view2d.visible.add(view2d.active); syncLayerBar(); view2d.draw(); }
   });
@@ -163,12 +163,22 @@ function buildLayerBar() {
     if (lab) t.checked ? view2d.visible.add(lab.dataset.layer!) : view2d.visible.delete(lab.dataset.layer!);
     if (t.id === "t-zones") view2d.showZones = t.checked;
     if (t.id === "t-silk") view2d.showSilk = t.checked;
-    if (t.id === "t-flip") view2d.setFlipped(t.checked);
+    if (t.id === "t-flip") flip(t.checked);
     syncLayerBar();
     view2d.draw();
   });
   $("#t-fit").addEventListener("click", () => view2d.fit());
   syncLayerBar();
+}
+
+/** Bottom view: the outer layer facing the viewer becomes the active one. */
+function flip(bottom: boolean) {
+  const top = bundle.layers[0].id, bot = bundle.layers[bundle.layers.length - 1].id;
+  if (bottom && view2d.active === top) view2d.active = bot;
+  if (!bottom && view2d.active === bot) view2d.active = top;
+  view2d.visible.add(view2d.active);
+  view2d.setFlipped(bottom);
+  view2d.draw();
 }
 
 function syncLayerBar() {
@@ -262,8 +272,12 @@ async function ensure3d() {
   host.innerHTML = `<div class="loading">Loading 3D…</div>`;
   try {
     const mod = await import("./view3d");
-    host.innerHTML = "";
+    host.innerHTML = `<div class="view3d-bar"><button data-view="iso">Iso</button><button data-view="top">Top</button><button data-view="bottom">Bottom</button></div>`;
     view3d = mod.mountView3D(host, bundle, base);
+    host.querySelector(".view3d-bar")!.addEventListener("click", (e) => {
+      const v = (e.target as HTMLElement).closest<HTMLElement>("[data-view]")?.dataset.view;
+      if (v) view3d?.view(v as "iso" | "top" | "bottom");
+    });
     view3d.highlight(refsOnSelection());
   } catch (err) {
     host.innerHTML = `<div class="loading">3D view failed: ${esc(String(err))}</div>`;
@@ -289,12 +303,18 @@ function tooltip(hit: Hit | null, x: number, y: number) {
 const netLabel = (n: string) => (n ? `net <b>${esc(n)}</b>` : `<i>no net</i>`);
 
 // ---------------------------------------------------------------- side pane
+const kindLabel: Record<string, string> = { pintable: "pin table", pinout: "pinout", description: "description", other: "mention" };
 function renderSide() {
   const info = $("#side-info");
   if (state.net) info.innerHTML = netHtml(state.net);
   else if (state.ref) info.innerHTML = fpHtml(fpByRef.get(state.ref)!);
   else info.innerHTML = summaryHtml();
-  info.querySelector(".pinrow.sel")?.scrollIntoView({ block: "nearest" });
+  // scroll the selected pin into view inside the pane only (scrollIntoView would also scroll the page on phones)
+  const row = info.querySelector<HTMLElement>(".pinrow.sel");
+  if (row) {
+    const r = row.getBoundingClientRect(), box = info.getBoundingClientRect();
+    if (r.bottom > box.bottom || r.top < box.top) info.scrollTop += r.top - box.top - box.height / 3;
+  }
   showDatasheet();
 }
 
@@ -385,18 +405,20 @@ function showDatasheet() {
   if ((!fp || !dsFile(fp)) && state.net) {
     // prefer ICs (more pins) on the net
     const cands = bundle.footprints.filter((f) => dsFile(f) && f.pads.some((p) => p.net === state.net)).sort((a, b) => b.pads.length - a.pads.length);
-    fp = cands[0];
-    pad = fp?.pads.find((p) => p.net === state.net);
+    if (cands[0]) {
+      fp = cands[0];
+      pad = fp.pads.find((p) => p.net === state.net);
+    }
   }
   const file = fp && dsFile(fp);
   if (!fp || !file) {
     host.classList.remove("on");
     const part = fp?.lcsc ? bundle.parts[fp.lcsc] : undefined;
     // link mode: no PDF in the bundle, but the pin index still says where to look
-    const p = state.pin ? fp?.pads.find((q) => q.num === state.pin) : undefined;
+    const p = pad;
     const h = p && fp?.lcsc ? pinindex[fp.lcsc]?.pins[p.pin ?? p.num]?.[0] : undefined;
     host.innerHTML = part?.datasheet?.url
-      ? `<p class="hint">Datasheet not bundled: <a href="${part.datasheet.url}" target="_blank" rel="noopener">open on LCSC</a>${h ? ` and see <b>p.${h.page}</b> (${h.kind}) for pin <b>${esc(p!.pin ?? p!.num)}</b>` : ""}.</p>`
+      ? `<p class="hint">Datasheet not bundled: <a href="${part.datasheet.url}" target="_blank" rel="noopener">open on LCSC</a>${h ? ` and see <b>p.${h.page}</b> (${kindLabel[h.kind] ?? h.kind}) for pin <b>${esc(p!.pin ?? p!.num)}</b>` : ""}.</p>`
       : "";
     if (part?.datasheet?.url) host.classList.add("on", "compact");
     return;
@@ -417,7 +439,6 @@ function showDatasheet() {
     head = host.querySelector(".pdf-head") as HTMLElement;
     pdf = new PdfView(host);
   }
-  const kindLabel: Record<string, string> = { pintable: "pin table", pinout: "pinout", description: "description", other: "mention" };
   head.innerHTML = `<span class="pdf-title">${esc(fp.mpn ?? fp.value)}${pad ? ` · pin <b>${esc(pad.pin ?? pad.num)}</b>` : ""}</span>
     <span class="hits">${hits.slice(0, 5).map((h) => `<button class="chip hit" data-page="${h.page}" title="score ${h.score.toFixed(2)}">p.${h.page} ${kindLabel[h.kind] ?? h.kind}</button>`).join("")}${pad && idx && !hits.length ? `<span class="muted small">pin not found in the datasheet</span>` : ""}</span>`;
   head.onclick = (e) => {

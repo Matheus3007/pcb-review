@@ -25,6 +25,7 @@ export interface View3D {
   dispose(): void;
   highlight(refs: string[]): void;
   resize(): void;
+  view(kind: "iso" | "top" | "bottom"): void;
 }
 
 const DEG = Math.PI / 180;
@@ -484,18 +485,17 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
       canvas.remove();
       delete el.dataset.view3d;
     },
-    /** Not part of the View3D contract: camera presets for debugging/tests. */
-    _debug: {
-      camera, controls, scene,
-      view(kind: "iso" | "top" | "bottom") {
-        if (kind === "iso") return fit();
-        const dist = radius / Math.sin((camera.fov * DEG) / 2) * 1.05;
-        camera.position.set(center.x, center.y + (kind === "top" ? -0.001 : 0.001), center.z + (kind === "top" ? dist : -dist));
-        controls.target.copy(center);
-        controls.update();
-        needsRender = true;
-      },
+    /** Camera presets. */
+    view(kind: "iso" | "top" | "bottom") {
+      if (kind === "iso") return fit();
+      const dist = radius / Math.sin((camera.fov * DEG) / 2) * 1.05;
+      camera.position.set(center.x, center.y + (kind === "top" ? -0.001 : 0.001), center.z + (kind === "top" ? dist : -dist));
+      controls.target.copy(center);
+      controls.update();
+      needsRender = true;
     },
+    /** Not part of the View3D contract: internals for debugging/tests. */
+    _debug: { camera, controls, scene },
   };
   return api;
 }

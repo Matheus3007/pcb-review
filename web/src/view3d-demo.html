@@ -27,9 +27,9 @@
       const el = document.getElementById("v");
       const view = mountView3D(el, bundle, base);
       window.view3d = view;
-      if (q.get("view")) view._debug.view(q.get("view"));
+      if (q.get("view")) view.view(q.get("view"));
       if (q.get("hl")) view.highlight(q.get("hl").split(","));
-      for (const b of document.querySelectorAll("[data-view]")) b.onclick = () => view._debug.view(b.dataset.view);
+      for (const b of document.querySelectorAll("[data-view]")) b.onclick = () => view.view(b.dataset.view);
       document.getElementById("hl").onchange = (e) => view.highlight(e.target.value.split(/[\s,]+/).filter(Boolean));
     </script>
   </body>

@@ -100,12 +100,11 @@ button, select, input { font: inherit; color: inherit; }
   background: var(--panel);
 }
 .side-info { padding: 12px 16px; overflow: auto; flex: 0 1 auto; max-height: 42%; border-bottom: 1px solid var(--line); }
-.side-info:only-child, .side-pdf:not(.on) { }
 .side-pdf { flex: 1; min-height: 0; display: none; flex-direction: column; }
 .side-pdf.on { display: flex; }
 .side-pdf.compact { flex: none; padding: 0 16px; }
-.side:has(.side-pdf:not(.on)) .side-info,
-.side:has(.side-pdf.compact) .side-info { max-height: none; flex: 1; }
+.side:has(.side-pdf:not(.on)) .side-info { max-height: none; flex: 1; }
+.side:has(.side-pdf.compact) .side-info { max-height: none; border-bottom: 0; }
 .side h2 { font-size: 16px; margin: 0 0 8px; }
 .muted { color: var(--muted); font-weight: 400; }
 .small { font-size: 12px; }
@@ -202,7 +201,7 @@ table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
 .empty { margin: 10vh auto; max-width: 560px; padding: 0 16px; }
 .empty h1 { color: var(--accent); }
 .board-list { list-style: none; padding: 0; }
-.board-list a { display: flex; justify-content: space-between; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; background: var(--panel); }
+.board-list a { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; background: var(--panel); }
 .board-list span { color: var(--muted); }
 .err { color: var(--bad); }
 .loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); }
@@ -213,6 +212,16 @@ table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
   .stage { min-height: 60vh; }
   .splitter { display: none; }
   .side { width: auto !important; min-height: 70vh; }
-  .search input { width: 120px; }
+  .topbar { flex-wrap: wrap; height: auto; padding: 6px 12px; gap: 6px 10px; }
+  .tabs { margin-left: 0; }
+  .search { order: 5; width: 100%; margin: 0 0 4px; }
+  .search input { width: 100%; }
   .tabs button { padding: 6px 8px; }
+  .layerbar { padding: 6px 12px; }
 }
+
+.view3d-bar { position: absolute; top: 10px; left: 10px; z-index: 2; display: flex; gap: 4px; }
+.view3d-bar button {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 13px;
+}
+.view3d-bar button:hover { border-color: var(--accent); }
