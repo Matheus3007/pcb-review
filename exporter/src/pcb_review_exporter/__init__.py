@@ -1,2 +1,1 @@
-def hello() -> str:
-    return "Hello from pcb-review-exporter!"
+"""pcb-lab board -> pcb-review bundle exporter."""

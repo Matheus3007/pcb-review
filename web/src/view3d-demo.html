@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>view3d demo</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #1d1f23; color: #ddd; font: 13px system-ui, sans-serif; }
+      #v { position: absolute; inset: 0; }
+      #bar { position: absolute; left: 8px; top: 8px; z-index: 1; display: flex; gap: 6px; }
+    </style>
+  </head>
+  <body>
+    <div id="v"></div>
+    <div id="bar">
+      <button data-view="iso">iso</button><button data-view="top">top</button><button data-view="bottom">bottom</button>
+      <input id="hl" placeholder="highlight refs (U1 C3...)" />
+    </div>
+    <script type="module">
+      // Dev-only page: /src/view3d-demo.html?bundle=rebot-ctrl-v2&view=top&hl=U1,J1
+      import { mountView3D } from "./view3d.ts";
+      const q = new URLSearchParams(location.search);
+      const base = `/bundles/${q.get("bundle") || "rebot-ctrl-v2"}/`;
+      let res = await fetch(base + "board.json");
+      if (!res.ok || !(res.headers.get("content-type") || "").includes("json")) res = await fetch(base + "bundle.json");
+      const bundle = await res.json();
+      const el = document.getElementById("v");
+      const view = mountView3D(el, bundle, base);
+      window.view3d = view;
+      if (q.get("view")) view._debug.view(q.get("view"));
+      if (q.get("hl")) view.highlight(q.get("hl").split(","));
+      for (const b of document.querySelectorAll("[data-view]")) b.onclick = () => view._debug.view(b.dataset.view);
+      document.getElementById("hl").onchange = (e) => view.highlight(e.target.value.split(/[\s,]+/).filter(Boolean));
+    </script>
+  </body>
+</html>

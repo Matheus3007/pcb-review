@@ -1,7 +1,7 @@
 [project]
 name = "pcb-review-exporter"
 version = "0.1.0"
-description = "Add your description here"
+description = "Export pcb-lab boards to pcb-review bundles"
 readme = "README.md"
 authors = [
     { name = "Matheus3007", email = "matheusrp2009@gmail.com" }
@@ -13,6 +13,9 @@ dependencies = [
     "pyyaml>=6.0.3",
     "trimesh>=5.1.1",
 ]
+
+[project.scripts]
+pcb-review-export = "pcb_review_exporter.bundle:main"
 
 [build-system]
 requires = ["uv_build>=0.13.0,<0.14.0"]

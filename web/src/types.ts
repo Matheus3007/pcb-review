@@ -9,6 +9,7 @@ export interface Bundle {
   name: string;
   generated: string;                 // ISO timestamp
   source: { board_dir: string; kicad_pcb: string };
+  origin: XY;                        // absolute KiCad coords of board (0,0): subtract from DRC positions
   thickness: number;                 // mm
   bbox: [number, number, number, number]; // x0,y0,x1,y1 of the outline
   outline: XY[][];                   // Edge.Cuts polygons; first = outer
@@ -87,7 +88,8 @@ export interface BomRow { comment: string; refs: string[]; footprint: string; lc
 // pinindex.json: { [lcsc]: PinIndexPart }
 export interface PinIndexPart {
   pages: number;
-  pins: Record<string, PinHit[]>;    // key: pin name (e.g. "PA9") or pad number
+  pins: Record<string, PinHit[]>;    // key: pin name (e.g. "PA9")
+  pads?: Record<string, PinHit[]>;   // key: pad number (parts with <= 16 pads): its cell in the pin table
 }
 export interface PinHit {
   page: number;                      // 1-based
