@@ -1,0 +1,24 @@
+[project]
+name = "pcb-review-exporter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Matheus3007", email = "matheusrp2009@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "cascadio>=0.1.1",
+    "pymupdf>=1.28.2",
+    "pyyaml>=6.0.3",
+    "trimesh>=5.1.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

@@ -1,0 +1,9 @@
+node_modules/
+web/dist/
+web/public/bundles/
+exporter/.venv/
+__pycache__/
+.pytest_cache/
+.cache/
+out/
+screenshots/*.tmp.png
