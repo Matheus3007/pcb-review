@@ -354,7 +354,7 @@ function summaryHtml(): string {
 function partLinks(lcsc?: string): string {
   if (!lcsc) return "";
   const p = bundle.parts[lcsc];
-  return `<span class="links"><a href="${p?.lcsc_url ?? `https://www.lcsc.com/product-detail/${lcsc}.html`}" target="_blank" rel="noopener">LCSC ${esc(lcsc)}</a> · <a href="${p?.jlc_url ?? "#"}" target="_blank" rel="noopener">JLC</a>${p?.datasheet?.url ? ` · <a href="${p.datasheet.url}" target="_blank" rel="noopener">datasheet</a>` : ""}</span>`;
+  return `<span class="links"><a href="${p?.lcsc_url ?? `https://www.lcsc.com/product-detail/${lcsc}.html`}" target="_blank" rel="noopener">LCSC ${esc(lcsc)}</a> · <a href="${p?.jlc_url ?? "#"}" target="_blank" rel="noopener">JLC</a>${p?.datasheet?.url ? ` · <a href="${p.datasheet.url}" target="_blank" rel="noopener">datasheet PDF</a>` : ""}</span>`;
 }
 
 function netHtml(net: string): string {
@@ -384,7 +384,7 @@ function netHtml(net: string): string {
 
 function pinRow(fp: Footprint, p: Pad, showNet = false): string {
   const sel = state.ref === fp.ref && state.pin === p.num;
-  const hasDs = !!(fp.lcsc && bundle.parts[fp.lcsc]?.datasheet?.file);
+  const hasDs = !!dsOf(fp);
   return `<a class="pinrow${sel ? " sel" : ""}" href="#" data-pinref="${esc(fp.ref)}" data-pin="${esc(p.num)}" ${showNet && p.net ? `data-net="${esc(p.net)}"` : ""}>
       <span class="pnum">${esc(p.num)}</span><span class="pname">${esc(p.pin ?? "")}</span>
       ${showNet ? `<span class="pnet">${p.net ? esc(p.net) : `<i class="muted">nc</i>`}</span>` : ""}
@@ -411,61 +411,83 @@ function fpHtml(fp: Footprint): string {
 /** Which datasheet + page to show for the current selection. */
 function showDatasheet() {
   const host = $("#side-pdf");
-  // candidate (fp, pad) pairs: focused pin, else first pin with a datasheet on the net, else focused part
+  // the focused pin, else the first pin on the net of the biggest part with a datasheet
   let fp: Footprint | undefined;
   let pad: Pad | undefined;
   if (state.ref) {
     fp = fpByRef.get(state.ref);
     pad = state.pin ? fp?.pads.find((p) => p.num === state.pin) : undefined;
+    // part + net but no pin: the part's pin on that net
+    if (!pad && state.net) pad = fp?.pads.find((p) => p.net === state.net);
   }
-  if ((!fp || !dsFile(fp)) && state.net) {
-    // prefer ICs (more pins) on the net
-    const cands = bundle.footprints.filter((f) => dsFile(f) && f.pads.some((p) => p.net === state.net)).sort((a, b) => b.pads.length - a.pads.length);
+  if ((!fp || !dsOf(fp)) && state.net) {
+    const cands = bundle.footprints.filter((f) => dsOf(f) && f.pads.some((p) => p.net === state.net)).sort((a, b) => b.pads.length - a.pads.length);
     if (cands[0]) {
       fp = cands[0];
       pad = fp.pads.find((p) => p.net === state.net);
     }
   }
-  const file = fp && dsFile(fp);
-  if (!fp || !file) {
+  const ds = fp && dsOf(fp);
+  if (!fp || !ds) {
     host.classList.remove("on");
-    const part = fp?.lcsc ? bundle.parts[fp.lcsc] : undefined;
-    // link mode: no PDF in the bundle, but the pin index still says where to look
-    const p = pad;
-    const h = p && fp?.lcsc ? pinindex[fp.lcsc]?.pins[p.pin ?? p.num]?.[0] : undefined;
-    host.innerHTML = part?.datasheet?.url
-      ? `<p class="hint">Datasheet not bundled: <a href="${part.datasheet.url}" target="_blank" rel="noopener">open on LCSC</a>${h ? ` and see <b>p.${h.page}</b> (${kindLabel[h.kind] ?? h.kind}) for pin <b>${esc(p!.pin ?? p!.num)}</b>` : ""}.</p>`
-      : "";
-    if (part?.datasheet?.url) host.classList.add("on", "compact");
+    host.innerHTML = "";
+    pdf = null;
     return;
   }
   host.classList.add("on");
-  host.classList.remove("compact");
   const idx = pinindex[fp.lcsc!];
-  // highlight the pin name; a bare pad number ("1") would light up every digit on the page
-  const terms = pad?.pin ? [pad.pin] : pad && /^[A-Z]+\d+$/i.test(pad.num) ? [pad.num] : [];
   let hits: PinHit[] = [];
   if (pad && idx) hits = idx.pins[pad.pin ?? ""]?.length ? idx.pins[pad.pin!] : idx.pins[pad.num] ?? idx.pads?.[pad.num] ?? [];
   const page = hits[0]?.page ?? 1;
-  const boxes: Record<number, [number, number, number, number][]> = {};
-  for (const h of hits) (boxes[h.page] ??= []).push(...h.boxes);
-  let head = host.querySelector(".pdf-head") as HTMLElement | null;
-  if (!head) {
-    host.innerHTML = `<div class="pdf-head"></div>`;
-    head = host.querySelector(".pdf-head") as HTMLElement;
-    pdf = new PdfView(host);
+  const pinName = pad ? esc(pad.pin ?? pad.num) : "";
+
+  // (re)build the frame when switching between the pdf.js viewer and the iframe
+  const mode = ds.file ? "pdfjs" : "iframe";
+  if (host.dataset.mode !== mode) {
+    host.dataset.mode = mode;
+    host.innerHTML = `<div class="pdf-head"></div>` + (mode === "iframe" ? `<div class="pdf-frame"></div>` : "");
+    pdf = mode === "pdfjs" ? new PdfView(host) : null;
   }
-  head.innerHTML = `<span class="pdf-title">${esc(fp.mpn ?? fp.value)}${pad ? ` · pin <b>${esc(pad.pin ?? pad.num)}</b>` : ""}</span>
-    <span class="hits">${hits.slice(0, 5).map((h) => `<button class="chip hit" data-page="${h.page}" title="score ${h.score.toFixed(2)}">p.${h.page} ${kindLabel[h.kind] ?? h.kind}</button>`).join("")}${pad && idx && !hits.length ? `<span class="muted small">pin not found in the datasheet</span>` : ""}</span>`;
+  const head = host.querySelector(".pdf-head") as HTMLElement;
+  const src = ds.file ? base + ds.file : ds.url!;
+  head.innerHTML = `<span class="pdf-title">${esc(fp.mpn ?? fp.value)}${pad ? ` · pin <b>${pinName}</b>` : ""}</span>
+    <span class="hits">${hits.slice(0, 5).map((h) => `<button class="chip hit" data-page="${h.page}" title="score ${h.score.toFixed(2)}">p.${h.page} ${kindLabel[h.kind] ?? h.kind}</button>`).join("")}${pad && idx && !hits.length ? `<span class="muted small">pin not found in the datasheet</span>` : ""}</span>
+    ${mode === "iframe" ? `<span class="pdf-note muted small">${hits[0] ? `Opened at p.${hits[0].page} for <b>${pinName}</b> · ` : ""}LCSC-hosted PDF <a href="${src}#page=${page}" target="_blank" rel="noopener">↗ new tab</a></span>` : ""}`;
   head.onclick = (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>("button.hit");
-    if (b) pdf!.goto(parseInt(b.dataset.page!, 10));
+    if (!b) return;
+    const n = parseInt(b.dataset.page!, 10);
+    if (pdf) pdf.goto(n);
+    else frameTo(host, src, n);
   };
-  pdf!.open({ url: base + file, page, terms, boxes }).catch((err) => console.error(err));
+  if (pdf) {
+    // highlight the pin name; a bare pad number ("1") would light up every digit on the page
+    const terms = pad?.pin ? [pad.pin] : pad && /^[A-Z]+\d+$/i.test(pad.num) ? [pad.num] : [];
+    const boxes: Record<number, [number, number, number, number][]> = {};
+    for (const h of hits) (boxes[h.page] ??= []).push(...h.boxes);
+    pdf.open({ url: src, page, terms, boxes }).catch((err) => console.error(err));
+  } else {
+    frameTo(host, src, page);
+  }
 }
 
-function dsFile(fp: Footprint): string | undefined {
-  return fp.lcsc ? bundle.parts[fp.lcsc]?.datasheet?.file : undefined;
+/**
+ * Remote datasheets (LCSC/JLC) send no CORS headers, so pdf.js can't read them from this site;
+ * the browser's own PDF viewer can, in an iframe, and honours #page=N. A new iframe per page:
+ * changing only the fragment doesn't navigate every viewer.
+ */
+function frameTo(host: HTMLElement, url: string, page: number) {
+  const box = host.querySelector(".pdf-frame") as HTMLElement;
+  // page= works in Chrome's and Firefox's viewers; zoom/pagemode are pdf.js (Firefox) extras, ignored elsewhere
+  const want = `${url}#page=${page}&zoom=page-width&pagemode=none`;
+  if (box.dataset.src === want) return;
+  box.dataset.src = want;
+  box.innerHTML = `<iframe title="Datasheet" src="${esc(want)}" referrerpolicy="no-referrer"></iframe>`;
+}
+
+function dsOf(fp: Footprint): { file?: string; url?: string } | undefined {
+  const d = fp.lcsc ? bundle.parts[fp.lcsc]?.datasheet : undefined;
+  return d && (d.file || d.url) ? d : undefined;
 }
 
 function onLinkClick(e: MouseEvent) {
@@ -502,7 +524,7 @@ function bomHtml(): string {
   <table class="grid"><thead><tr><th>Qty</th><th>Value</th><th>Designators</th><th>Footprint</th><th>LCSC</th><th>Datasheet</th></tr></thead><tbody>
   ${rows.map((r) => {
     const part = bundle.parts[r.lcsc];
-    const ds = part?.datasheet?.file ? `<a href="#" data-pinref="${esc(r.refs[0])}" data-pin="">open</a>` : part?.datasheet?.url ? `<a href="${part.datasheet.url}" target="_blank" rel="noopener">LCSC</a>` : `<span class="muted">—</span>`;
+    const ds = part?.datasheet?.file || part?.datasheet?.url ? `<a href="#" data-pinref="${esc(r.refs[0])}" data-pin="">open</a>` : `<span class="muted">—</span>`;
     return `<tr data-refs="${esc(r.refs.join(","))}"><td class="num">${r.refs.length}</td><td>${esc(r.comment)}</td>
       <td>${r.refs.map((ref) => `<a href="#" data-goto-ref="${esc(ref)}">${esc(ref)}</a>`).join(" ")}</td>
       <td class="small">${esc(r.footprint)}</td><td>${r.lcsc ? partLinks(r.lcsc) : ""}</td><td>${ds}</td></tr>`;

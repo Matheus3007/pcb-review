@@ -4,9 +4,9 @@ A static web app (no server) for reviewing the PCBs that pcb-lab generates, with
 
 ## Hard rules
 
-- **pcb-lab (`/mnt/c/Users/mathe/pcb-lab`) is read-only.** Another session works there. Never write, `make`, or commit in it. The exporter only reads `boards/<b>/build/**`, `board.yaml`, and `lib/{datasheets,3d}`.
+- **pcb-lab (`/mnt/c/Users/mathe/pcb-lab`) is read-only.** Another session works there. Never write, `make`, or commit in it. The exporter only reads `boards/<b>/build/**`, `board.yaml`, `lib/{datasheets,3d}`, and `lib/jlc_cache.json` (datasheet URLs for link mode).
 - **No publishing.** Don't create GitHub repos, push, deploy, or touch DNS; those are the owner's calls. The deploy workflow and DNS steps are prepared in README.md.
-- **Hosting third-party content publicly** (datasheet PDFs, EasyEDA models) is the owner's decision. `make release-bundle` defaults to `--datasheets link`.
+- **Datasheets on the public site come from LCSC, never re-hosted** (the owner's decision, 2026-10-14). `make release-bundle` uses `--datasheets link`: iframe of LCSC's raw PDF at `#page=N` (no CORS, so not pdf.js). EasyEDA 3D models are hosted (the current default; the owner hasn't ruled on it).
 - `web/src/types.ts` is the bundle contract. When you change it, change the exporter and docs/bundle-format.md in the same commit.
 
 ## Loop
@@ -25,6 +25,7 @@ make shots                        # Playwright screenshots of the main views -> 
 - **Vite file watching on /mnt/c misses edits** and then serves stale modules (it even logs "page reload"). `web/vite.config.ts` enables polling. If the UI ignores an edit, check with `curl localhost:5173/src/<file>.ts`, then restart vite.
 - **Headless Chromium needs nss, nspr, gbm and asound**, and there's no sudo. They were unpacked from `apt-get download` .debs into `~/.local/lib/chromium-deps`; `scripts/shoot.mjs` sets `LD_LIBRARY_PATH`. On a new machine, repeat: `apt-get download libnspr4 libnss3 libgbm1 libasound2 libwayland-server0 libxkbcommon0`, `dpkg-deb -x` each, then copy the `*.so*` files there.
 - WebGL in headless needs `--use-angle=swiftshader --enable-unsafe-swiftshader` (already in shoot.mjs).
+- **iframe'd PDFs** don't render in chromium-headless-shell. Use `BROWSER=firefox` with `LD_LIBRARY_PATH=~/.local/lib/chromium-deps` set on node itself (Playwright checks host libs in-process); shoot.mjs re-enables Firefox's pdf.js, which Playwright disables. LCSC's CDN (Akamai) answers "Access Denied" to the `HeadlessChrome` user agent, so a real UA is needed when testing with Chrome. chromium-headless-shell even **crashes** ("Target page closed") on a page holding a cross-origin PDF iframe, so with link-mode bundles, shoot any selection that shows a datasheet with Firefox. `make shots` uses the dev bundle (pdf.js), which is unaffected.
 - uv on /mnt/c: `UV_LINK_MODE=copy` (the Makefile exports it).
 - The shell prints a zoxide warning on every command. It's harmless; ignore it.
 

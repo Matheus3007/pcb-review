@@ -1,0 +1,14 @@
+{
+ "boards": [
+  {
+   "name": "rebot-ctrl-v2",
+   "path": "rebot-ctrl-v2/board.json",
+   "generated": "2026-10-14T23:30:27+00:00",
+   "layers": 4,
+   "size_mm": [
+    25.0,
+    25.0
+   ]
+  }
+ ]
+}

@@ -38,6 +38,47 @@ def _board_files(board_dir: Path) -> dict[str, Path]:
     }
 
 
+JLC_FILE_URL = "https://jlcpcb.com/api/file/downloadByFileSystemAccessId/{}"
+LCSC_VIEWER_PREFIX = "https://www.lcsc.com/datasheet/lcsc_datasheet_"
+LCSC_PDF_PREFIX = "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/"
+
+
+def _is_pdf(url: str, timeout: float = 15) -> bool | None:
+    """True/False if the URL serves a PDF, None if the network is unavailable."""
+    import urllib.error
+    import urllib.request
+
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Range": "bytes=0-1023"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.read(5) == b"%PDF-"
+    except urllib.error.HTTPError:
+        return False
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return None
+
+
+def remote_datasheet_url(lcsc: str, jlc_cache: dict, check: bool = True) -> str | None:
+    """A direct PDF URL that a browser can show inline (iframe), for link mode.
+
+    LCSC's own datasheet links are an HTML viewer that refuses framing (X-Frame-Options); the
+    same file is served raw from wmsc.lcsc.com. Fallback: JLC's file endpoint (pcb-lab's source
+    for lib/datasheets, so page numbers match). Neither sends CORS headers, so pdf.js can't load
+    them cross-origin: the web app embeds them in an iframe instead.
+    """
+    info = jlc_cache.get(lcsc) or {}
+    cands = []
+    if info.get("datasheet"):
+        cands.append(info["datasheet"].replace(LCSC_VIEWER_PREFIX, LCSC_PDF_PREFIX))
+    if info.get("datasheet_file_id"):
+        cands.append(JLC_FILE_URL.format(info["datasheet_file_id"]))
+    for url in cands:
+        ok = _is_pdf(url) if check else True
+        if ok or ok is None:  # offline: keep the first candidate unverified
+            return url
+    return None
+
+
 def _lib_dir(board_dir: Path) -> Path:
     return board_dir.parent.parent / "lib"
 
@@ -58,7 +99,7 @@ def _bom(p: Path) -> list[dict]:
 
 
 def build_bundle(board_dir: str | Path, out_root: str | Path, *, datasheets: str = "bundle",
-                 models: bool = True, pin_index: bool = True, cache_dir: str | Path | None = None,
+                 models: bool = True, pin_index: bool = True, check_links: bool = True, cache_dir: str | Path | None = None,
                  log=print) -> Path:
     if datasheets not in DATASHEET_MODES:
         raise ValueError(f"datasheets must be one of {DATASHEET_MODES}")
@@ -117,17 +158,25 @@ def build_bundle(board_dir: str | Path, out_root: str | Path, *, datasheets: str
         if not part.get("mpn"):
             part.pop("mpn", None)
 
+    jlc_cache = (_read_json(lib / "jlc_cache.json") or {}) if datasheets == "link" else {}
     pinindex: dict[str, dict] = {}
     for lc, part in parts.items():
         pdf = lib / "datasheets" / f"{lc}.pdf"
-        if not pdf.exists() or datasheets == "none":
+        if datasheets == "none":
+            continue
+        if datasheets == "link":
+            # passives have no local copy in pcb-lab but still get their LCSC PDF linked
+            url = remote_datasheet_url(lc, jlc_cache, check=check_links)
+            if url:
+                part["datasheet"] = {"url": url}
+            elif pdf.exists():
+                log(f"{lc}: no remote datasheet URL (LCSC/JLC): only the LCSC page link")
+        if not pdf.exists():
             continue
         if datasheets == "bundle":
             (out / "datasheets").mkdir(exist_ok=True)
             shutil.copy2(pdf, out / "datasheets" / pdf.name)
             part["datasheet"] = {"file": f"datasheets/{pdf.name}"}
-        else:
-            part["datasheet"] = {"url": part["lcsc_url"]}
         if pin_index:
             pins = _part_pins(parts[lc]["refs"], by_ref)
             if pins:
@@ -135,12 +184,17 @@ def build_bundle(board_dir: str | Path, out_root: str | Path, *, datasheets: str
 
     if models:
         _attach_models(geo["footprints"], out, cache, log)
+    for fp in geo["footprints"]:
+        for m in fp["models"]:
+            m["source"] = portable_source(m["source"], board_dir.parent.parent)
 
     bundle = {
         "schema": 1,
         "name": name,
         "generated": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
-        "source": {"board_dir": str(board_dir), "kicad_pcb": str(files["pcb"])},
+        # relative to the pcb-lab checkout: bundles get published, local paths don't belong in them
+        "source": {"board_dir": str(board_dir.relative_to(board_dir.parent.parent)),
+                   "kicad_pcb": str(files["pcb"].relative_to(board_dir.parent.parent))},
         "origin": geo["origin"],
         "thickness": float(board_yaml.get("thickness", geo["thickness"])),
         **{k: geo[k] for k in ("bbox", "outline", "layers", "nets", "tracks", "vias", "zones", "footprints")},
@@ -203,6 +257,20 @@ def _attach_models(footprints: list[dict], out: Path, cache: Path, log) -> None:
         for m in fp["models"]:
             if mapping.get(m["source"]):
                 m["glb"] = mapping[m["source"]]
+
+
+def portable_source(src: str, pcb_lab: Path) -> str:
+    """Model path for the bundle without local paths: KiCad ${VARS} kept, pcb-lab files made
+    relative to the pcb-lab root, anything else reduced to its file name."""
+    if src.startswith("${"):
+        return src
+    p = src.replace("\\", "/")
+    if len(p) > 2 and p[1] == ":":  # Windows drive path -> WSL mount
+        p = f"/mnt/{p[0].lower()}{p[2:]}"
+    try:
+        return Path(p).resolve().relative_to(pcb_lab.resolve()).as_posix()
+    except ValueError:
+        return Path(p).name
 
 
 def _update_index(out_root: Path, bundle: dict) -> None:

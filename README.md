@@ -25,7 +25,7 @@ Keys in the copper view: `1`..`4` set the active layer, `b` toggles the bottom v
 
 The target is a subdomain such as `review.spinup.fail` on GitHub Pages. The blog stays in `Matheus3007/spinup-fail`; this would be its own repo.
 
-1. **Decide what gets public.** Datasheet PDFs and EasyEDA 3D models are third-party content. `make release-bundle BOARD=x` exports into `bundles/` with `--datasheets link` by default: no PDFs are bundled, and the side pane links to the LCSC page and names the page to read. To host the PDFs anyway, use `make release-bundle BOARD=x DATASHEETS=bundle`. For box-only 3D, add `ARGS=--no-models`.
+1. **What gets public.** `make release-bundle BOARD=x` exports into `bundles/` with `--datasheets link`, so no PDFs are hosted. The side pane shows LCSC's own copy of the PDF in the browser's PDF viewer, opened at the pin's page (e.g. p.56 for PA9). Pin highlighting is only available with bundled PDFs (`DATASHEETS=bundle`, as in local dev). The 3D models (KiCad's library, plus EasyEDA models for the USB-C and LMR36506) are converted and hosted. For box-only 3D, add `ARGS=--no-models`.
 2. Commit `bundles/<board>/` and push to `main` in a new GitHub repo, e.g. `Matheus3007/pcb-review`.
 3. In the repo settings, go to *Pages → Source: GitHub Actions*. `.github/workflows/pages.yml` builds `web/`, adds `bundles/`, and deploys.
 4. Custom domain:

@@ -28,7 +28,7 @@ The contract between the exporter and the web app. The TypeScript types in `web/
 
 ## Datasheets
 
-- `Part.datasheet.file`: bundled PDF, relative to board.json; it is shown in the embedded viewer.
-- `Part.datasheet.url`: link mode; no PDF is hosted, and the UI links to LCSC.
+- `Part.datasheet.file`: bundled PDF, relative to board.json. It is shown in the pdf.js viewer, with the pin name highlighted.
+- `Part.datasheet.url`: link mode, where no PDF is hosted. The URL is a *direct* PDF: LCSC's raw host `wmsc.lcsc.com`, derived from pcb-lab's `lib/jlc_cache.json`, or JLC's file endpoint as a fallback. The exporter checks once that it really serves a PDF. These hosts send no CORS headers, so pdf.js can't read them from our origin. The web app embeds the PDF in an iframe instead (the browser's own PDF viewer), opened at `#page=N`; this has been seen working in Chrome and Firefox. The page hint and page buttons stay; pin highlighting is only available for bundled PDFs. LCSC's `www.lcsc.com/datasheet/...` links can't be framed: they are an HTML viewer sent with `X-Frame-Options: SAMEORIGIN`.
 
 The pin index is built either way, from pcb-lab's local copy. Each `PinHit` has a 1-based `page`, a `kind` (`pintable` | `pinout` | `description` | `other`), a `score`, and `boxes` in PDF points with a top-left origin (PyMuPDF space, unrotated page). Hits are sorted best-first. The viewer opens `hits[0].page` and also highlights whole-word matches of the pin name found in pdf.js's text layer on whatever page is shown.

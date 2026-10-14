@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+from pathlib import Path
 
 import pytest
 
@@ -96,8 +97,37 @@ def test_bundle_pin_names_and_index(tmp_path):
 
 @needs_board
 def test_link_mode_bundles_no_pdfs(tmp_path):
-    out = build_bundle(BOARD, tmp_path / "b", datasheets="link", models=False, cache_dir=tmp_path / "c", log=lambda *_: None)
+    out = build_bundle(BOARD, tmp_path / "b", datasheets="link", models=False, check_links=False,
+                       cache_dir=tmp_path / "c", log=lambda *_: None)
     b = json.loads((out / "board.json").read_text())
     assert not (out / "datasheets").exists()
     ds = b["parts"]["C529358"]["datasheet"]
-    assert "file" not in ds and ds["url"].startswith("https://www.lcsc.com/")
+    # LCSC's raw PDF host (the www.lcsc.com/datasheet link is an HTML viewer that refuses framing)
+    assert "file" not in ds and ds["url"].startswith("https://wmsc.lcsc.com/") and ds["url"].endswith("C529358.pdf")
+    # passives have no local PDF in pcb-lab but still get a link; the pin index still comes from local copies
+    assert b["parts"]["C25076"]["datasheet"]["url"].endswith(".pdf")
+    assert json.loads((out / b["pinindex"]).read_text())["C529358"]["pins"]["PA9"][0]["page"] == 56
+
+
+def test_remote_datasheet_url_fallbacks(monkeypatch):
+    from pcb_review_exporter import bundle as B
+
+    cache = {"C1": {"datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_X_C1.pdf", "datasheet_file_id": "42"},
+             "C2": {"datasheet": None, "datasheet_file_id": "7"}, "C3": {}}
+    monkeypatch.setattr(B, "_is_pdf", lambda url, timeout=15: "wmsc" in url)
+    assert B.remote_datasheet_url("C1", cache) == "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/X_C1.pdf"
+    assert B.remote_datasheet_url("C2", cache) is None  # JLC candidate rejected by the (fake) check
+    monkeypatch.setattr(B, "_is_pdf", lambda url, timeout=15: "wmsc" not in url)
+    assert B.remote_datasheet_url("C1", cache) == B.JLC_FILE_URL.format("42")  # broken LCSC link -> JLC
+    monkeypatch.setattr(B, "_is_pdf", lambda url, timeout=15: None)  # offline: first candidate, unverified
+    assert B.remote_datasheet_url("C1", cache).startswith("https://wmsc.lcsc.com/")
+    assert B.remote_datasheet_url("C3", cache) is None
+
+
+def test_portable_source(tmp_path):
+    from pcb_review_exporter.bundle import portable_source
+
+    lab = PCB_LAB
+    assert portable_source("${KICAD10_3DMODEL_DIR}/X.3dshapes/Y.step", lab) == "${KICAD10_3DMODEL_DIR}/X.3dshapes/Y.step"
+    assert portable_source(r"C:\\Users\\mathe\\pcb-lab\\lib\\3d\\U.step", Path("/mnt/c/Users/mathe/pcb-lab")) == "lib/3d/U.step"
+    assert portable_source(r"D:\\elsewhere\\Z.step", lab) == "Z.step"

@@ -8,7 +8,7 @@ export interface Bundle {
   schema: 1;
   name: string;
   generated: string;                 // ISO timestamp
-  source: { board_dir: string; kicad_pcb: string };
+  source: { board_dir: string; kicad_pcb: string }; // relative to the pcb-lab root
   origin: XY;                        // absolute KiCad coords of board (0,0): subtract from DRC positions
   thickness: number;                 // mm
   bbox: [number, number, number, number]; // x0,y0,x1,y1 of the outline

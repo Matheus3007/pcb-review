@@ -1,11 +1,18 @@
 // Headless screenshots for verification: node scripts/shoot.mjs <url> <out.png> [actions-json]
 // actions: [{"click":[x,y]} | {"wait":ms} | {"key":"f"} | {"sel":"css"}]
-import { chromium } from "../web/node_modules/playwright/index.mjs";
+import { chromium, firefox } from "../web/node_modules/playwright/index.mjs";
 import os from "node:os";
 // WSL without sudo: chromium's missing libs (nss, nspr, gbm, asound) unpacked from .debs, see CLAUDE.md
 const LIBS = `${os.homedir()}/.local/lib/chromium-deps`;
 const [url, out, acts = "[]"] = process.argv.slice(2);
-const browser = await chromium.launch({ env: { ...process.env, LD_LIBRARY_PATH: [LIBS, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":") }, args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+// BROWSER=firefox: its built-in PDF viewer renders iframe'd PDFs (chromium-headless-shell has none).
+// Firefox brings its own (newer) NSS: its dir must come before LIBS.
+const ff = process.env.BROWSER === "firefox";
+const ffDir = ff ? (await import("node:fs")).readdirSync(`${os.homedir()}/.cache/ms-playwright`).filter((d) => d.startsWith("firefox-")).sort().pop() : "";
+const libPath = [ff ? `${os.homedir()}/.cache/ms-playwright/${ffDir}/firefox` : "", LIBS, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":");
+const browser = ff
+  ? await firefox.launch({ env: { ...process.env, LD_LIBRARY_PATH: libPath }, firefoxUserPrefs: { "pdfjs.disabled": false } })
+  : await chromium.launch({ env: { ...process.env, LD_LIBRARY_PATH: libPath }, args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const page = await browser.newPage({ viewport: process.env.MOBILE ? { width: 390, height: 844 } : { width: 1500, height: 900 }, deviceScaleFactor: process.env.MOBILE ? 2 : 1 });
 const logs = [];
 page.on("console", (m) => (m.type() === "error" || m.type() === "warning") && logs.push(`${m.type()}: ${m.text()}`));

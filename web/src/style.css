@@ -102,9 +102,7 @@ button, select, input { font: inherit; color: inherit; }
 .side-info { padding: 12px 16px; overflow: auto; flex: 0 1 auto; max-height: 42%; border-bottom: 1px solid var(--line); }
 .side-pdf { flex: 1; min-height: 0; display: none; flex-direction: column; }
 .side-pdf.on { display: flex; }
-.side-pdf.compact { flex: none; padding: 0 16px; }
 .side:has(.side-pdf:not(.on)) .side-info { max-height: none; flex: 1; }
-.side:has(.side-pdf.compact) .side-info { max-height: none; border-bottom: 0; }
 .side h2 { font-size: 16px; margin: 0 0 8px; }
 .muted { color: var(--muted); font-weight: 400; }
 .small { font-size: 12px; }
@@ -229,3 +227,7 @@ table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
   background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 13px;
 }
 .view3d-bar button:hover { border-color: var(--accent); }
+
+.pdf-note { flex-basis: 100%; }
+.pdf-frame { flex: 1; min-height: 0; border-top: 1px solid var(--line); background: #525659; }
+.pdf-frame iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
