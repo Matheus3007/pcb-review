@@ -13,11 +13,11 @@ help:
 	@echo "make dev | build | test | e2e | shots"
 
 bundle:
-	$(UV) pcb-review-export $(PCB_LAB)/boards/$(BOARD) -o web/public/bundles --datasheets $(DATASHEETS) $(ARGS)
+	$(UV) pcb-review-export $(PCB_LAB)/boards/$(BOARD) -o web/public/bundles --datasheets $(DATASHEETS) --library $(PCB_LAB) $(ARGS)
 
 # Deployed copy. Default: link to LCSC rather than re-hosting third-party PDFs (the owner's call, see README).
 release-bundle:
-	$(UV) pcb-review-export $(PCB_LAB)/boards/$(BOARD) -o bundles --datasheets $(if $(filter command line,$(origin DATASHEETS)),$(DATASHEETS),link) $(ARGS)
+	$(UV) pcb-review-export $(PCB_LAB)/boards/$(BOARD) -o bundles --datasheets $(if $(filter command line,$(origin DATASHEETS)),$(DATASHEETS),link) --library $(PCB_LAB) $(ARGS)
 
 dev:
 	cd web && npx vite --port $(PORT)
@@ -27,7 +27,7 @@ build:
 
 test:
 	cd exporter && uv run pytest -q
-	cd web && npx tsc --noEmit
+	cd web && npx tsc --noEmit && npx vitest run
 
 # Browser tests (Playwright) against the production build + bundles/, as deployed
 e2e:

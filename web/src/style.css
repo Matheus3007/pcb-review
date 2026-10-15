@@ -63,7 +63,7 @@ button, select, input { font: inherit; color: inherit; }
 }
 .tabs button:hover { background: var(--panel-2); color: var(--text); }
 .tabs button.on { background: var(--panel-2); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
-.search { margin-left: auto; }
+.search { margin-left: 8px; }
 .search input {
   width: 200px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px;
 }
@@ -231,3 +231,33 @@ table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
 .pdf-note { flex-basis: 100%; }
 .pdf-frame { flex: 1; min-height: 0; border-top: 1px solid var(--line); background: #525659; }
 .pdf-frame iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+
+/* ---------- open a local board ---------- */
+.open-btn { margin-left: auto; }
+.open-btn + .search { margin-left: 0; }
+.btn {
+  display: inline-block; cursor: pointer; padding: 6px 14px; border-radius: 6px; font-weight: 600;
+  background: var(--accent); color: #1a1405; border: 0;
+}
+.btn:hover { filter: brightness(1.08); }
+.open-dialog {
+  max-width: 560px; width: calc(100% - 32px); border: 1px solid var(--line); border-radius: 10px;
+  background: var(--panel); color: var(--text); padding: 18px 20px;
+}
+.open-dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+.open-dialog h2 { margin: 0 0 12px; font-size: 17px; }
+.open-dialog form { float: right; }
+.dropzone { border: 2px dashed var(--line); border-radius: 10px; padding: 14px 16px; text-align: center; }
+.dropzone .buttons { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.drop-overlay {
+  position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--bg) 80%, transparent); pointer-events: none;
+}
+.drop-overlay[hidden] { display: none; }
+.drop-overlay div { border: 3px dashed var(--accent); border-radius: 16px; padding: 40px 56px; font-size: 20px; font-weight: 600; background: var(--panel); }
+.banner {
+  display: flex; gap: 10px; align-items: flex-start; padding: 8px 14px; font-size: 13px; flex: none;
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel)); border-bottom: 1px solid var(--line);
+}
+.banner span { flex: 1; }
+.banner ul { margin: 0; padding-left: 18px; color: var(--muted); flex: 2; }

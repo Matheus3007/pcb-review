@@ -24,57 +24,173 @@ const $ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 // ---------------------------------------------------------------- boot
+interface BoardEntry { name: string; path: string; layers: number; size_mm: number[]; generated: string }
+let boards: BoardEntry[] = [];
+
 async function boot() {
   const params = new URLSearchParams(location.search);
-  let url = params.get("bundle");
-  const app = $("#app");
-  if (!url) {
-    const idx = await fetch("bundles/index.json").then((r) => (r.ok ? r.json() : { boards: [] })).catch(() => ({ boards: [] }));
-    const want = params.get("board");
-    const entry = idx.boards.find((b: { name: string }) => b.name === want) ?? (idx.boards.length === 1 ? idx.boards[0] : null);
-    if (!entry) {
-      app.innerHTML = picker(idx.boards);
-      return;
-    }
-    url = `bundles/${entry.path}`;
-    renderShell(idx.boards);
-  } else {
-    renderShell([]);
+  const url = params.get("bundle");
+  bindOpeners();
+  if (url) return openUrl(url);
+  const idx = await fetch("bundles/index.json").then((r) => (r.ok ? r.json() : { boards: [] })).catch(() => ({ boards: [] }));
+  boards = idx.boards;
+  const want = params.get("board");
+  const entry = boards.find((b) => b.name === want) ?? (boards.length === 1 ? boards[0] : null);
+  if (!entry) {
+    $("#app").innerHTML = picker(boards);
+    return;
   }
-  base = new URL(url, location.href).href.replace(/[^/]*$/, "");
-  bundle = await fetch(url).then((r) => {
+  return openUrl(`bundles/${entry.path}`);
+}
+
+/** A published bundle (or any ?bundle=<url> serving board.json). */
+async function openUrl(url: string) {
+  const b: Bundle = await fetch(url).then((r) => {
     if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
     return r.json();
   });
-  if (bundle.pinindex) pinindex = await fetch(base + bundle.pinindex).then((r) => r.json()).catch(() => ({}));
+  const at = new URL(url, location.href).href.replace(/[^/]*$/, "");
+  const pi = b.pinindex ? await fetch(at + b.pinindex).then((r) => r.json()).catch(() => ({})) : {};
+  start(b, at, pi);
+}
+
+/** Show a bundle. Called again when another board is opened: everything is rebuilt. */
+function start(b: Bundle, bundleBase: string, pi: Record<string, PinIndexPart>, local?: { warnings: string[] }) {
+  view3d?.dispose();
+  view3d = null;
+  pdf = null;
+  bundle = b;
+  base = bundleBase;
+  pinindex = pi;
+  fpByRef.clear();
   for (const fp of bundle.footprints) fpByRef.set(fp.ref, fp);
+  renderShell(local ? [] : boards, local ? `${b.name} (local)` : undefined);
   document.title = `${bundle.name} · pcb-review`;
-  $("#board-name").textContent = bundle.name;
+  $("#board-name").textContent = local ? `${bundle.name} · local` : bundle.name;
+  if (local) {
+    state.tab = "copper";
+    state.net = state.ref = state.pin = null;
+    history.replaceState(null, "", location.pathname + location.search);
+    banner(`Opened <b>${esc(b.name)}</b> from your files. Nothing was uploaded: it only lives in this tab.`, local.warnings);
+  }
   setup();
-  readHash();
+  if (!local) readHash();
   apply();
   // hook for the e2e tests (web/e2e): read-only access to the live objects
   (window as unknown as { pcbReview: unknown }).pcbReview = { bundle, state, view2d, get view3d() { return view3d; } };
 }
 
-function picker(boards: { name: string; layers: number; size_mm: number[]; generated: string }[]): string {
-  if (!boards.length) return `<div class="empty"><h1>pcb-review</h1><p>No bundles found. Export one with <code>make bundle BOARD=&lt;name&gt;</code>.</p></div>`;
-  return `<div class="empty"><h1>pcb-review</h1><ul class="board-list">${boards
-    .map((b) => `<li><a href="?board=${encodeURIComponent(b.name)}"><b>${esc(b.name)}</b><span>${b.layers} layers · ${b.size_mm.join(" × ")} mm</span></a></li>`)
-    .join("")}</ul></div>`;
+// ---------------------------------------------------------------- open a local board
+async function openLocal(files: import("./importer/importer").FileMap) {
+  const [{ importBoard }] = await Promise.all([import("./importer/importer")]);
+  // shared datasheet links / pin pages / published GLBs for boards that weren't exported
+  const lib = await fetch("bundles/library.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  const { bundle: b, pinindex: pi, warnings } = await importBoard(files, lib);
+  start(b, new URL("bundles/", location.href).href, pi, { warnings });
 }
 
-function renderShell(boards: { name: string }[]) {
+async function handleOpen(get: () => Promise<import("./importer/importer").FileMap>) {
+  const dlg = document.getElementById("open-dialog") as HTMLDialogElement | null;
+  const status = dlg?.querySelector(".open-status");
+  if (status) status.textContent = "Reading…";
+  try {
+    await openLocal(await get());
+    dlg?.close();
+  } catch (err) {
+    console.warn(err);
+    if (status) status.textContent = String((err as Error).message ?? err);
+    else banner(`Couldn't open that: ${esc(String((err as Error).message ?? err))}`, []);
+    dlg?.showModal?.();
+  }
+}
+
+let openersBound = false;
+function bindOpeners() {
+  if (openersBound) return;
+  openersBound = true;
+  const dlg = document.createElement("dialog");
+  dlg.id = "open-dialog";
+  dlg.className = "open-dialog";
+  dlg.innerHTML = `
+    <form method="dialog"><button class="ghost close" aria-label="Close">✕</button></form>
+    <h2>Open a pcb-lab board</h2>
+    <div class="dropzone" tabindex="0">
+      <p><b>Drop</b> a board folder (<code>boards/&lt;name&gt;</code>), its <code>build/</code> folder, or a <code>.zip</code> of either.</p>
+      <p class="buttons"><label class="btn">Choose folder…<input type="file" id="open-folder" webkitdirectory multiple hidden></label>
+      <label class="btn">Choose .zip…<input type="file" id="open-zip" accept=".zip,application/zip" hidden></label></p>
+    </div>
+    <p class="open-status muted small"></p>
+    <p class="muted small">Read in your browser: nothing is uploaded. Uses <code>build/fab/*.kicad_pcb</code>, plus <code>build/work/netlist.json</code> (pin names), the BOM, <code>build/reports/</code> and <code>board.yaml</code> when present. Datasheets open from LCSC for parts in pcb-lab's library.</p>`;
+  document.body.appendChild(dlg);
+  dlg.querySelector<HTMLInputElement>("#open-folder")!.addEventListener("change", (e) => {
+    const files = (e.target as HTMLInputElement).files;
+    if (files?.length) handleOpen(async () => (await import("./importer/files")).fromFileList(files));
+  });
+  dlg.querySelector<HTMLInputElement>("#open-zip")!.addEventListener("change", (e) => {
+    const files = (e.target as HTMLInputElement).files;
+    if (files?.length) handleOpen(async () => (await import("./importer/files")).fromFileList(files));
+  });
+  // drag-and-drop anywhere on the page
+  const overlay = document.createElement("div");
+  overlay.className = "drop-overlay";
+  overlay.hidden = true;
+  overlay.innerHTML = `<div>Drop a pcb-lab board folder or .zip</div>`;
+  document.body.appendChild(overlay);
+  let depth = 0;
+  const hasFiles = (e: DragEvent) => !!e.dataTransfer && Array.from(e.dataTransfer.types).includes("Files");
+  window.addEventListener("dragenter", (e) => { if (hasFiles(e)) { depth++; overlay.hidden = false; } });
+  window.addEventListener("dragleave", () => { if (--depth <= 0) { depth = 0; overlay.hidden = true; } });
+  window.addEventListener("dragover", (e) => { if (hasFiles(e)) e.preventDefault(); });
+  window.addEventListener("drop", (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    depth = 0;
+    overlay.hidden = true;
+    const dt = e.dataTransfer!;
+    // read the entries synchronously-ish: DataTransfer items expire after the event
+    const pending = import("./importer/files").then((m) => m.fromDataTransfer(dt));
+    handleOpen(() => pending);
+  });
+  document.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).closest("[data-open]")) {
+      e.preventDefault();
+      dlg.querySelector(".open-status")!.textContent = "";
+      dlg.showModal();
+    }
+  });
+}
+
+function banner(html: string, warnings: string[]) {
+  document.querySelector(".banner")?.remove();
+  const el = document.createElement("div");
+  el.className = "banner";
+  el.innerHTML = `<span>${html}</span>${warnings.length ? `<ul>${warnings.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>` : ""}<button class="ghost" aria-label="Dismiss">✕</button>`;
+  el.querySelector("button")!.addEventListener("click", () => el.remove());
+  const main = document.querySelector(".main");
+  main ? main.before(el) : document.body.prepend(el);
+}
+
+function picker(boards: { name: string; layers: number; size_mm: number[]; generated: string }[]): string {
+  const open = `<p><button class="btn" data-open>Open a board from your computer…</button></p>
+    <p class="muted small">Any pcb-lab board: drop its folder or a .zip anywhere on this page. Nothing is uploaded.</p>`;
+  if (!boards.length) return `<div class="empty"><h1>pcb-review</h1><p>No published boards.</p>${open}</div>`;
+  return `<div class="empty"><h1>pcb-review</h1><ul class="board-list">${boards
+    .map((b) => `<li><a href="?board=${encodeURIComponent(b.name)}"><b>${esc(b.name)}</b><span>${b.layers} layers · ${b.size_mm.join(" × ")} mm</span></a></li>`)
+    .join("")}</ul>${open}</div>`;
+}
+
+function renderShell(boards: { name: string }[], localName?: string) {
   $("#app").innerHTML = `
   <header class="topbar">
     <a class="brand" href="./" title="All boards">pcb-review</a>
-    ${boards.length > 1 ? `<select id="board-select" aria-label="Board">${boards.map((b) => `<option>${esc(b.name)}</option>`).join("")}</select>` : `<span id="board-name" class="board-name"></span>`}
+    ${boards.length > 1 && !localName ? `<select id="board-select" aria-label="Board">${boards.map((b) => `<option>${esc(b.name)}</option>`).join("")}</select>` : `<span id="board-name" class="board-name"></span>`}
     <nav class="tabs" role="tablist">
       <button data-tab="copper" role="tab">Copper</button>
       <button data-tab="3d" role="tab">3D</button>
       <button data-tab="bom" role="tab">BOM</button>
       <button data-tab="checks" role="tab">Checks</button>
     </nav>
+    <button class="ghost open-btn" data-open title="Open a pcb-lab board folder or .zip from your computer">Open…</button>
     <div class="search"><input id="search" list="search-list" placeholder="Net or ref…" autocomplete="off" spellcheck="false"><datalist id="search-list"></datalist></div>
   </header>
   <div class="layerbar" id="layerbar"></div>
@@ -100,7 +216,7 @@ function renderShell(boards: { name: string }[]) {
   }
   const sel = document.getElementById("board-select") as HTMLSelectElement | null;
   if (sel) {
-    sel.value = new URLSearchParams(location.search).get("board") ?? "";
+    sel.value = new URLSearchParams(location.search).get("board") ?? boards[0]?.name ?? "";
     sel.addEventListener("change", () => (location.search = `?board=${encodeURIComponent(sel.value)}`));
   }
 }
@@ -121,6 +237,9 @@ function setup() {
   buildSearch();
   $("#pane-bom").innerHTML = bomHtml();
   $("#pane-checks").innerHTML = checksHtml();
+  initSplitter();
+  if (globalsBound) return;
+  globalsBound = true;
   document.addEventListener("click", onLinkClick);
   window.addEventListener("hashchange", () => {
     readHash();
@@ -135,8 +254,8 @@ function setup() {
     const n = parseInt(e.key, 10);
     if (n >= 1 && n <= bundle.layers.length) { view2d.active = bundle.layers[n - 1].id; view2d.visible.add(view2d.active); syncLayerBar(); view2d.draw(); }
   });
-  initSplitter();
 }
+let globalsBound = false;
 
 function buildLayerBar() {
   const bar = $("#layerbar");

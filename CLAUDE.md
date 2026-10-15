@@ -6,8 +6,8 @@ A static web app (no server) for reviewing the PCBs that pcb-lab generates, with
 
 - **pcb-lab (`/mnt/c/Users/mathe/pcb-lab`) is read-only.** Another session works there. Never write, `make`, or commit in it. The exporter only reads `boards/<b>/build/**`, `board.yaml`, `lib/{datasheets,3d}`, and `lib/jlc_cache.json` (datasheet URLs for link mode).
 - **Pushing `main` deploys the public site.** The repo is github.com/Matheus3007/pcb-review (public) and GitHub Pages serves https://review.spinup.fail (repo variable `PAGES_CNAME`). Commit locally as you go, but push only when the owner or manager asks. Never touch DNS (Porkbun; the owner's). A public board needs `make release-bundle BOARD=x` and a commit of `bundles/x/`.
-- **Datasheets on the public site come from LCSC, never re-hosted** (the owner's decision, 2026-10-14). `make release-bundle` uses `--datasheets link`: iframe of LCSC's raw PDF at `#page=N` (no CORS, so not pdf.js). EasyEDA 3D models are hosted (the current default; the owner hasn't ruled on it).
-- `web/src/types.ts` is the bundle contract. When you change it, change the exporter and docs/bundle-format.md in the same commit.
+- **Datasheets on the public site come from LCSC, never re-hosted** (the owner's decision, 2026-10-14). `make release-bundle` uses `--datasheets link`: iframe of LCSC's raw PDF at `#page=N` (no CORS, so not pdf.js). It also writes `bundles/library.json` and `bundles/_models/` (every model any pcb-lab board uses) for boards opened from disk. EasyEDA 3D models are hosted (the current default; the owner hasn't ruled on it).
+- `web/src/types.ts` is the bundle contract. When you change it, change the exporter, the in-browser importer (`web/src/importer/`, a port of `kicad.py` + `bundle.py`) and docs/bundle-format.md in the same commit. `npx vitest run` checks importer ↔ exporter parity on `web/e2e/fixtures/boards/rebot-ctrl-v2`; regenerate that fixture with `scripts/make-fixture.sh`, which strips local paths.
 
 ## Loop
 

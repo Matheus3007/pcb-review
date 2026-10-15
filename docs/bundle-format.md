@@ -12,6 +12,8 @@ The contract between the exporter and the web app. The TypeScript types in `web/
     models/*.glb           converted STEP models
 ```
 
+`<bundles root>/library.json` (written by `--library <pcb-lab>`) serves boards opened in the browser from a local folder. It has `parts` (LCSC number → `datasheet_url`, `pinindex`, `pinout_source`, links) for pcb-lab's whole part library, and `models` (portable model path → GLB under `_models/`) for every model any pcb-lab board uses. The importer (`web/src/importer/`) must produce the same Bundle as the Python exporter; `importer.test.ts` checks this against `bundles/rebot-ctrl-v2`.
+
 ## Coordinates
 
 - **2D**: mm, board-relative. The board.yaml `origin` is subtracted, or the Edge.Cuts bbox corner when there is none; `Bundle.origin` keeps it, so absolute KiCad positions (e.g. DRC markers) can be mapped. +Y points down and rotations are CCW degrees on screen, both as in KiCad.

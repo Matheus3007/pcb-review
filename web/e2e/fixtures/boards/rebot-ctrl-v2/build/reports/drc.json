@@ -1,0 +1,220 @@
+{
+ "$schema": "https://schemas.kicad.org/drc.v1.json",
+ "coordinate_units": "mm",
+ "ignored_checks": [
+  {
+   "description": "Footprint has no courtyard defined",
+   "key": "missing_courtyard"
+  },
+  {
+   "description": "Track endpoint not centered on via",
+   "key": "track_not_centered_on_via"
+  },
+  {
+   "description": "Tuning profile track geometries",
+   "key": "tuning_profile_track_geometries"
+  },
+  {
+   "description": "Footprint doesn't match symbol's footprint filters",
+   "key": "footprint_filters_mismatch"
+  },
+  {
+   "description": "Footprint component type doesn't match footprint pads",
+   "key": "footprint_type_mismatch"
+  }
+ ],
+ "included_severities": [
+  "error",
+  "warning",
+  "exclusion"
+ ],
+ "kicad_version": "10.0.7",
+ "schematic_parity": [
+  {
+   "description": "Pad missing net given by schematic (unconnected-(J3-SBU1-PadA8))",
+   "items": [
+    {
+     "description": "Pad A8 [<no net>] of J3 on F.Cu",
+     "pos": {
+      "x": 117.8,
+      "y": 107.695
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(J3-SBU2-PadB8))",
+   "items": [
+    {
+     "description": "Pad B8 [<no net>] of J3 on F.Cu",
+     "pos": {
+      "x": 120.8,
+      "y": 107.695
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(U1-PA5-Pad10))",
+   "items": [
+    {
+     "description": "Pad 10 [<no net>] of U1 on F.Cu",
+     "pos": {
+      "x": 104.9925,
+      "y": 111.0
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(U1-PA6-Pad11))",
+   "items": [
+    {
+     "description": "Pad 11 [<no net>] of U1 on F.Cu",
+     "pos": {
+      "x": 104.9925,
+      "y": 111.5
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(U1-PA7-Pad12))",
+   "items": [
+    {
+     "description": "Pad 12 [<no net>] of U1 on F.Cu",
+     "pos": {
+      "x": 104.9925,
+      "y": 112.0
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(U1-PF1-Pad3))",
+   "items": [
+    {
+     "description": "Pad 3 [<no net>] of U1 on F.Cu",
+     "pos": {
+      "x": 108.18,
+      "y": 109.8125
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(U2-PGOOD-Pad2))",
+   "items": [
+    {
+     "description": "Pad 2 [<no net>] of U2 on F.Cu",
+     "pos": {
+      "x": 116.7,
+      "y": 119.35
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(U4-INT2-Pad9))",
+   "items": [
+    {
+     "description": "Pad 9 [<no net>] of U4 on F.Cu",
+     "pos": {
+      "x": 113.85,
+      "y": 112.0875
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(U4-NC-Pad10))",
+   "items": [
+    {
+     "description": "Pad 10 [<no net>] of U4 on F.Cu",
+     "pos": {
+      "x": 113.35,
+      "y": 112.0875
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  },
+  {
+   "description": "Pad missing net given by schematic (unconnected-(U4-NC-Pad11))",
+   "items": [
+    {
+     "description": "Pad 11 [<no net>] of U4 on F.Cu",
+     "pos": {
+      "x": 112.85,
+      "y": 112.0875
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "net_conflict"
+  }
+ ],
+ "source": "rebot-ctrl-v2.kicad_pcb",
+ "unconnected_items": [],
+ "violations": [
+  {
+   "description": "Silkscreen clipped by board edge (board setup constraints silk clearance 0.1500 mm; actual 0.0000 mm)",
+   "items": [
+    {
+     "description": "Polygon on Edge.Cuts",
+     "pos": {
+      "x": 124.0,
+      "y": 100.0
+     }
+    },
+    {
+     "description": "Segment of J3 on F.Silkscreen",
+     "pos": {
+      "x": 114.35,
+      "y": 101.65
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "silk_edge_clearance"
+  },
+  {
+   "description": "Silkscreen clipped by board edge (board setup constraints silk clearance 0.1500 mm; actual 0.0000 mm)",
+   "items": [
+    {
+     "description": "Polygon on Edge.Cuts",
+     "pos": {
+      "x": 124.0,
+      "y": 100.0
+     }
+    },
+    {
+     "description": "Segment of J3 on F.Silkscreen",
+     "pos": {
+      "x": 123.75,
+      "y": 101.65
+     }
+    }
+   ],
+   "severity": "warning",
+   "type": "silk_edge_clearance"
+  }
+ ]
+}

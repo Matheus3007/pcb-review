@@ -1,0 +1,1008 @@
+{
+ "board": "rebot-ctrl-v2",
+ "pass": true,
+ "errors": 0,
+ "warnings": 0,
+ "waived": 41,
+ "findings": [
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "Buck Vin: spike budget vs LMR36506 65 V: 40 V in [0, 58.5]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "Buck output (RFBT 100k / RFBB 22k): 5.545 V in [5.3, 5.8]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "+5V rail after the OR diode (receiver supply): 5.195 V in [4.75, 5.5]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "+5V vs XC6206 6.0 V max input: 5.545 V in [0, 6]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "XC6206 headroom (dropout ~0.25 V @ 100 mA): 1.895 V in [0.4, 3]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "XC6206 dissipation (SOT-23 ~0.25 W): 0.1516 W in [0, 0.25]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "+5V load: receiver 0.3 A + 3V3 rail vs LMR36506 0.6 A: 0.38 A in [0, 0.6]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "D1 (B5819WS, SOD-323 ~0.2 W) dissipation at the full +5V load: 0.133 W in [0, 0.2]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "Buck inductor peak (24 V in, 0.4 A load) vs Isat 0.68 A: 0.4969 A in [0, 0.612]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "VBAT_ADC at full LiHV (100k/10k): 2.373 V in [0, 3.3]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "CURR_ADC if the ESC cable is reversed (VBAT on CURR): 2.373 V in [0, 3.3]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "ESC current signal 3.3 V -> ADC counts after /11 (12-bit): 372.3 counts in [300, 4095]"
+  },
+  {
+   "check": "circuit/assertion",
+   "severity": "ok",
+   "msg": "Status LED current (Vf 1.8-2.4 V): 0.0014 A in [0.0005, 0.005]"
+  },
+  {
+   "check": "schematic/pins_match",
+   "severity": "ok",
+   "msg": "all 191 symbol pins match parts.yaml"
+  },
+  {
+   "check": "schematic/netlist_match",
+   "severity": "ok",
+   "msg": "KiCad's netlist of the schematic equals circuit.py (43 nets)"
+  },
+  {
+   "check": "erc/pin_to_pin",
+   "severity": "warning",
+   "msg": "Pins of type Bidirectional and Power output are connected: Symbol U4 Pin 2 [SDX, Bidirectional, Line]; Symbol #FLG02 Pin 1 [Power output, Line]",
+   "waived": "LSM6DSV32X DS13511 table 2: SDx must be tied to VDD_IO or GND when the analog hub/Qvar is unused; tied to GND"
+  },
+  {
+   "check": "erc/pin_to_pin",
+   "severity": "warning",
+   "msg": "Pins of type Bidirectional and Power output are connected: Symbol U5 Pin 3 [~{WP}/IO_{2}, Bidirectional, Line]; Symbol U3 Pin 2 [VO, Power output, Line]",
+   "waived": "W25Q128JV: /WP tied high for standard (non-quad) SPI, as the datasheet requires; IO2 is never driven"
+  },
+  {
+   "check": "erc/pin_to_pin",
+   "severity": "warning",
+   "msg": "Pins of type Bidirectional and Power output are connected: Symbol U5 Pin 7 [~{HOLD}/~{RESET}/IO_{3}, Bidirectional, Line]; Symbol U3 Pin 2 [VO, Power output, Line]",
+   "waived": "W25Q128JV: /HOLD tied high for standard (non-quad) SPI, as the datasheet requires; IO3 is never driven"
+  },
+  {
+   "check": "drc/silk_edge_clearance",
+   "severity": "warning",
+   "msg": "Silkscreen clipped by board edge (board setup constraints silk clearance 0.1500 mm; actual 0.0000 mm): Polygon on Edge.Cuts; Segment of J3 on F.Silkscreen",
+   "waived": "USB-C footprint silk outline intentionally reaches the board edge (connector overhang marker, as in pipeline-demo); clipped by fab"
+  },
+  {
+   "check": "drc/silk_edge_clearance",
+   "severity": "warning",
+   "msg": "Silkscreen clipped by board edge (board setup constraints silk clearance 0.1500 mm; actual 0.0000 mm): Polygon on Edge.Cuts; Segment of J3 on F.Silkscreen",
+   "waived": "USB-C footprint silk outline intentionally reaches the board edge (connector overhang marker, as in pipeline-demo); clipped by fab"
+  },
+  {
+   "check": "parity/ok",
+   "severity": "ok",
+   "msg": "board matches the schematic (KiCad schematic parity)"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C10 -> U1 pad 1: 1.96 mm (max 2.5) — MCU VDD (pin 1) decoupling"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C11 -> U1 pad 17: 1.91 mm (max 2.3) — MCU VDD (pin 17) decoupling"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C15 -> U1 pad 15: 1.21 mm (max 2.2) — VDDA HF decoupling"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "R14 -> U1 pad 9: 1.31 mm (max 1.9) — CURR divider at PA4"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C17 -> U1 pad 9: 2.35 mm (max 2.9) — CURR filter at PA4"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "R16 -> U1 pad 2: 3.02 mm (max 4.2) — VBAT divider bottom; PF0's top side is the DShot fan, so it sits in the right strip (DC signal)"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C18 -> U1 pad 2: 2.56 mm (max 5.3) — VBAT filter (10 nF on a 100k/10k divider, DC): beside R16"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "R8 -> U1 pad 13: 1.19 mm (max 2.1) — LED resistor at PB0"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "R1 -> J2 pad 3: 3.03 mm (max 3.5) — CRSF in series R, upright between the MCU and J2 (the corridor left of the USB vias)"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "R2 -> J2 pad 4: 4.66 mm (max 5.1) — CRSF out series R, beside R1"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C19 -> U4 pad 8: 1.37 mm (max 1.8) — IMU VDD decoupling"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C20 -> U4 pad 5: 1.20 mm (max 2.4) — IMU VDDIO decoupling"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C21 -> U5 pad 8: 1.26 mm (max 2.1) — flash VCC decoupling"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C2 -> U2 pad 4: 1.08 mm (max 1.6) — buck VIN HF"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C1 -> U2 pad 4: 1.89 mm (max 2.4) — buck VIN bulk"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C3 -> U2 pad 6: 1.79 mm (max 1.8) — buck BOOT"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C4 -> U2 pad 7: 1.26 mm (max 1.9) — buck VCC"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "R6 -> U2 pad 8: 1.13 mm (max 1.5) — buck FB divider"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "L1 -> U2 pad 5: 3.93 mm (max 4.4) — buck inductor at SW (C3 and R5 sit between them; SW trace ~3.5 mm)"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C7 -> U3 pad 3: 1.63 mm (max 2.1) — LDO input cap at VIN (pad 3)"
+  },
+  {
+   "check": "placement/near",
+   "severity": "ok",
+   "msg": "C8 -> U3 pad 2: 1.60 mm (max 2.2) — LDO output cap at VOUT (pad 2)"
+  },
+  {
+   "check": "placement/on_edge",
+   "severity": "ok",
+   "msg": "J1 courtyard -0.18 mm from top edge — ESC cable plugs in from the top edge"
+  },
+  {
+   "check": "placement/on_edge",
+   "severity": "ok",
+   "msg": "J3 courtyard -0.52 mm from top edge — USB-C mouth at the top edge (reachable with the lid off)"
+  },
+  {
+   "check": "placement/on_edge",
+   "severity": "ok",
+   "msg": "J2 courtyard -0.17 mm from left edge — receiver cable comes from the robot left side"
+  },
+  {
+   "check": "parts/tiers",
+   "severity": "info",
+   "msg": "23 unique parts: basic 14, preferred 1, extended 8 (extended: C160407 SM08B-SRSS-TB(LF)(SN), C189895 SM04B-GHS-TB(LF)(SN), C165948 TYPE-C-31-M-12, C2870127 LMR36506RRPER, C167761 FNR3015S220MT, C529358 STM32G431KBU6, C22461202 LSM6DSV32XTR, C190862 W25Q128JVPIQ)"
+  },
+  {
+   "check": "current/width",
+   "severity": "ok",
+   "msg": "GND: min track 0.15 mm vs 0.115 mm needed for 0.5 A (IPC-2221, ΔT 10 °C, 1.0 oz)"
+  },
+  {
+   "check": "current/width",
+   "severity": "ok",
+   "msg": "VBAT: min track 0.4 mm vs 0.115 mm needed for 0.5 A (IPC-2221, ΔT 10 °C, 1.0 oz)"
+  },
+  {
+   "check": "current/width",
+   "severity": "ok",
+   "msg": "+5V: min track 0.3 mm vs 0.115 mm needed for 0.5 A (IPC-2221, ΔT 10 °C, 1.0 oz)"
+  },
+  {
+   "check": "current/width",
+   "severity": "ok",
+   "msg": "VBUS: min track 0.2 mm vs 0.115 mm needed for 0.5 A (IPC-2221, ΔT 10 °C, 1.0 oz)"
+  },
+  {
+   "check": "current/width",
+   "severity": "ok",
+   "msg": "BUCK_SW: min track 0.4 mm vs 0.115 mm needed for 0.5 A (IPC-2221, ΔT 10 °C, 1.0 oz)"
+  },
+  {
+   "check": "current/width",
+   "severity": "ok",
+   "msg": "V5_BUCK: min track 0.4 mm vs 0.115 mm needed for 0.5 A (IPC-2221, ΔT 10 °C, 1.0 oz)"
+  },
+  {
+   "check": "current/width",
+   "severity": "ok",
+   "msg": "3V3: min track 0.2 mm vs 0.115 mm needed for 0.5 A (IPC-2221, ΔT 10 °C, 1.0 oz)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "+5V on In2.Cu: 0.25 mm sideways step at (13.61, 10.45) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "+5V distribution (buck/USB -> LDO, receiver), DC with bulk caps at both ends"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "+5V on In2.Cu: 0.81 mm sideways step at (16.19, 10.28) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "+5V distribution (buck/USB -> LDO, receiver), DC with bulk caps at both ends"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "3V3 on F.Cu: 0.80 mm sideways step at (3.78, 16.73) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "3V3 distribution, DC and decoupled at every pin"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "3V3 on F.Cu: 0.85 mm sideways step at (9.40, 9.50) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "3V3 distribution, DC and decoupled at every pin"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "3V3 on F.Cu: 0.39 mm sideways step at (9.50, 19.02) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "3V3 distribution, DC and decoupled at every pin"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "3V3 on F.Cu: 0.88 mm sideways step at (9.88, 19.02) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "3V3 distribution, DC and decoupled at every pin"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "BUCK_BOOT on F.Cu: 0.71 mm sideways step at (20.25, 20.43) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "bootstrap cap C3 to the LMR36506 BOOT pin, <3 mm; steps add no measurable loop area"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "BUCK_BOOT on F.Cu: 0.15 mm sideways step at (20.44, 21.30) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "bootstrap cap C3 to the LMR36506 BOOT pin, <3 mm; steps add no measurable loop area"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "BUCK_VCC on F.Cu: 0.25 mm sideways step at (19.16, 19.52) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "buck internal regulator pin to its 1 uF cap and RT; DC"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "BUCK_VCC on F.Cu: 0.47 mm sideways step at (19.63, 19.52) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "buck internal regulator pin to its 1 uF cap and RT; DC"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "CC1 on F.Cu: 0.39 mm sideways step at (19.88, 8.76) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "USB-C CC pull-down, static"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "CC1 on F.Cu: 0.58 mm sideways step at (19.88, 9.15) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "USB-C CC pull-down, static"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "CRSF_IN on F.Cu: 0.89 mm sideways step at (6.51, 20.10) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "CRSF UART (420 kbaud) between the upright series resistors and the receiver connector pins"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "CRSF_OUT on F.Cu: 1.46 mm sideways step at (6.39, 21.05) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "CRSF UART (420 kbaud) between the upright series resistors and the receiver connector pins"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "CRSF_OUT on F.Cu: 0.60 mm sideways step at (6.99, 21.05) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "CRSF UART (420 kbaud) between the upright series resistors and the receiver connector pins"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "DSHOT1 on F.Cu: 1.19 mm sideways step at (8.02, 8.30) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "scripted DShot fan: 1.06 mm -> 0.5 mm pitch step from the J1 resistor row into PA0 (one 45-degree step)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "DSHOT2 on F.Cu: 0.40 mm sideways step at (6.96, 8.60) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "scripted DShot fan: 1.06 mm -> 0.5 mm pitch step from the J1 resistor row into PA1 (one 45-degree step)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "DSHOT3 on F.Cu: 0.40 mm sideways step at (5.90, 8.60) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "scripted DShot fan: 1.06 mm -> 0.5 mm pitch step from the J1 resistor row into PA2 (one 45-degree step)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "DSHOT4 on F.Cu: 1.19 mm sideways step at (4.84, 8.30) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "scripted DShot fan: 1.06 mm -> 0.5 mm pitch step from the J1 resistor row into PA3 (one 45-degree step)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SPI_MISO on F.Cu: 0.07 mm sideways step at (10.92, 13.68) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "step at the IMU LGA escape (0.5 mm pitch); SPI <= 10 MHz over ~20 mm with GND under it"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SPI_MOSI on In2.Cu: 0.99 mm sideways step at (17.24, 15.57) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "step under the flash on In2 (B.Cu GND below); SPI <= 10 MHz, net far shorter than the edge-rate wavelength"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SWDIO on F.Cu: 0.97 mm sideways step at (3.53, 3.82) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "debug-only line to its bottom test pad"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SWDIO on F.Cu: 0.14 mm sideways step at (6.09, 18.58) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "debug-only line to its bottom test pad"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SWDIO on In2.Cu: 0.49 mm sideways step at (1.48, 11.40) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "debug-only line to its bottom test pad"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "TLM_RX on F.Cu: 0.73 mm sideways step at (7.44, 20.28) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "ESC telemetry UART (115 kbaud), routed around the test-pad keepouts"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "TLM_RX on F.Cu: 0.63 mm sideways step at (9.87, 14.41) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "ESC telemetry UART (115 kbaud), routed around the test-pad keepouts"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "TLM_RX on In2.Cu: 0.30 mm sideways step at (4.22, 18.70) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "ESC telemetry UART (115 kbaud), routed around the test-pad keepouts"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "TLM_RX on In2.Cu: 0.41 mm sideways step at (4.22, 19.11) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "ESC telemetry UART (115 kbaud), routed around the test-pad keepouts"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "VBAT on F.Cu: 0.14 mm sideways step at (11.78, 22.50) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "battery feed to the buck and the VBAT divider, DC (buck input caps at U2)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "VBAT on In2.Cu: 0.12 mm sideways step at (5.18, 17.52) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "battery feed to the buck and the VBAT divider, DC (buck input caps at U2)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "VBAT on In2.Cu: 0.48 mm sideways step at (8.20, 10.14) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "battery feed to the buck and the VBAT divider, DC (buck input caps at U2)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "VBAT on In2.Cu: 1.01 mm sideways step at (8.71, 22.05) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "battery feed to the buck and the VBAT divider, DC (buck input caps at U2)"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "VBAT_ADC on F.Cu: 0.57 mm sideways step at (9.08, 8.70) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "scripted VBAT-sense line from R15 (resistor row) into PF0 past the NRST via; RC-filtered DC divider"
+  },
+  {
+   "check": "routing/stats",
+   "severity": "info",
+   "msg": "288 bends total; per net: +5V 17, 3V3 53, BOOT0 4, BUCK_BOOT 8, BUCK_FB 4, BUCK_SW 4, BUCK_VCC 9, CC1 7, CC2 3, CRSF_IN 3, CRSF_OUT 5, CRSF_RX 1, CRSF_TX 1, CURR_ADC 2, DSHOT1 2, DSHOT2 2, DSHOT3 2, DSHOT4 2, ESC_CURR 1, ESC_TLM 1, FLASH_CS 4, GND 3, IMU_CS 6, IMU_INT1 8, LED 1, LED_A 2, M1 1, M2 1, M4 1, NRST 4, SPI_MISO 13, SPI_MOSI 8, SPI_SCK 11, SWCLK 6, SWDIO 17, TLM_RX 14, USB_DM 10, USB_DP 10, V5_BUCK 8, VBAT 22, VBAT_ADC 4, VBUS 3"
+  },
+  {
+   "check": "layout/return_path",
+   "severity": "warning",
+   "msg": "CRSF_OUT: 0.49 mm of track has no GND under it on the reference layer (worst 0.25 mm on F.Cu over a gap in In1.Cu at (6.27, 21.17)); the return current detours around the gap (loop area, crosstalk)",
+   "waived": "0.49 mm total past via antipads in In1 near the receiver connector; 420 kbaud UART"
+  },
+  {
+   "check": "layout/return_path",
+   "severity": "warning",
+   "msg": "SPI_MISO: 0.30 mm of track has no GND under it on the reference layer (worst 0.30 mm on F.Cu over a gap in In1.Cu at (11.06, 13.89)); the return current detours around the gap (loop area, crosstalk)",
+   "waived": "0.30 mm (at the 0.3 mm limit) past one via antipad in In1 in the MCU-IMU channel"
+  },
+  {
+   "check": "layout/return_path",
+   "severity": "info",
+   "msg": "SPI_SCK: 0.30 mm of track has no GND under it on the reference layer (worst 0.30 mm on F.Cu over a gap in In1.Cu at (11.63, 13.09)); the return current detours around the gap (loop area, crosstalk)"
+  },
+  {
+   "check": "layout/finger",
+   "severity": "ok",
+   "msg": "no unstitched dead-end GND tongues longer than 8.0 mm"
+  },
+  {
+   "check": "layout/loop",
+   "severity": "ok",
+   "msg": "buck HF input loop (C2): 1.67 mm² enclosed by C2.1 → U2.4 → U2.9 → C2.2 (max 3.0 mm²)"
+  },
+  {
+   "check": "layout/loop",
+   "severity": "ok",
+   "msg": "buck HF input loop (C2): U2.9 and C2.2 (GND) are not joined by copper on F.Cu; nearest GND vias 1.07 / 0.71 mm from them (max 1.5 mm, so the return drops straight into the plane)"
+  },
+  {
+   "check": "layout/loop",
+   "severity": "ok",
+   "msg": "buck bulk input loop (C1): 3.86 mm² enclosed by C1.1 → U2.4 → U2.9 → C1.2 (max 6.0 mm²)"
+  },
+  {
+   "check": "layout/pair",
+   "severity": "ok",
+   "msg": "USB_DP/USB_DM: lengths 34.34/38.61 mm, skew 4.27 mm (max 5.0)"
+  },
+  {
+   "check": "layout/vias",
+   "severity": "warning",
+   "msg": "SPI_SCK: 6 vias (sensitive net, max 4); each via is a reference-plane change for its return current",
+   "waived": "SCK reaches the IMU (beside the MCU) and the flash's far pin column (CLK on the side away from the MCU) on In2; 6 vias on a <=10 MHz clock with a GND plane next to every layer it uses"
+  }
+ ],
+ "bom": [
+  {
+   "category": "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+   "datasheet": "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2304140030_Samsung-Electro-Mechanics-CL21A225KBQNNNE_C377773.pdf",
+   "datasheet_file_id": "8588932555597369344",
+   "description": "2.2uF 50V X5R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C377773",
+   "manufacturer": "Samsung Electro-Mechanics",
+   "mpn": "CL21A225KBQNNNE",
+   "package": "0805",
+   "stock": 604964,
+   "tier": "basic",
+   "unit_price_usd": 0.0367,
+   "refs": [
+    "C1"
+   ],
+   "value": "2.2uF",
+   "footprint": "Capacitor_SMD:C_0805_2012Metric"
+  },
+  {
+   "category": "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Samsung-Electro-Mechanics-CL05B103KB5NNNC_C15195.pdf",
+   "datasheet_file_id": "8579707307011465216",
+   "description": "10nF 50V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C15195",
+   "manufacturer": "Samsung Electro-Mechanics",
+   "mpn": "CL05B103KB5NNNC",
+   "package": "0402",
+   "stock": 3555916,
+   "tier": "basic",
+   "unit_price_usd": 0.005,
+   "refs": [
+    "C17",
+    "C18"
+   ],
+   "value": "10nF",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric"
+  },
+  {
+   "category": "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Samsung-Electro-Mechanics-CL05B104KB54PNC_C307331.pdf",
+   "datasheet_file_id": "8554627388281098240",
+   "description": "100nF 50V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C307331",
+   "manufacturer": "Samsung Electro-Mechanics",
+   "mpn": "CL05B104KB54PNC",
+   "package": "0402",
+   "stock": 16008995,
+   "tier": "basic",
+   "unit_price_usd": 0.0104,
+   "refs": [
+    "C2",
+    "C3",
+    "C10",
+    "C11",
+    "C15",
+    "C16",
+    "C19",
+    "C20",
+    "C21"
+   ],
+   "value": "100nF",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric"
+  },
+  {
+   "category": "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Samsung-Electro-Mechanics-CL05A105KA5NQNC_C52923.pdf",
+   "datasheet_file_id": "8579707174974914560",
+   "description": "1uF 25V X5R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C52923",
+   "manufacturer": "Samsung Electro-Mechanics",
+   "mpn": "CL05A105KA5NQNC",
+   "package": "0402",
+   "stock": 7450558,
+   "tier": "basic",
+   "unit_price_usd": 0.0087,
+   "refs": [
+    "C4",
+    "C7",
+    "C8",
+    "C14"
+   ],
+   "value": "1uF",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric"
+  },
+  {
+   "category": "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Samsung-Electro-Mechanics-CL21A226MAQNNNE_C45783.pdf",
+   "datasheet_file_id": "8579706866429190144",
+   "description": "22uF 25V X5R ±20% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C45783",
+   "manufacturer": "Samsung Electro-Mechanics",
+   "mpn": "CL21A226MAQNNNE",
+   "package": "0805",
+   "stock": 3674151,
+   "tier": "basic",
+   "unit_price_usd": 0.2206,
+   "refs": [
+    "C5"
+   ],
+   "value": "22uF",
+   "footprint": "Capacitor_SMD:C_0805_2012Metric"
+  },
+  {
+   "category": "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Samsung-Electro-Mechanics-CL05A475MP5NRNC_C23733.pdf",
+   "datasheet_file_id": "8579707315714920448",
+   "description": "10V 4.7uF X5R ±20% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C23733",
+   "manufacturer": "Samsung Electro-Mechanics",
+   "mpn": "CL05A475MP5NRNC",
+   "package": "0402",
+   "stock": 2076629,
+   "tier": "basic",
+   "unit_price_usd": 0.0167,
+   "refs": [
+    "C6",
+    "C9",
+    "C13"
+   ],
+   "value": "4.7uF",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric"
+  },
+  {
+   "category": "Schottky Diodes",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2407291648_MDD-Microdiode-Semiconductor-B5819WS_C64886.pdf",
+   "datasheet_file_id": "8757105821027180544",
+   "description": "-55℃~+125℃ 1A 1mA@40V 25A 40V 900mV@3A Independent SOD-323 Schottky Diodes ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C64886",
+   "manufacturer": "MDD(Microdiode Semiconductor)",
+   "mpn": "B5819WS",
+   "package": "SOD-323",
+   "stock": 495062,
+   "tier": "preferred",
+   "unit_price_usd": 0.0245,
+   "refs": [
+    "D2",
+    "D1"
+   ],
+   "value": "B5819WS 40V 1A",
+   "footprint": "Diode_SMD:D_SOD-323"
+  },
+  {
+   "category": "LED Indication - Discrete",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_1810231112_Hubei-KENTO-Elec-KT-0603R_C2286.pdf",
+   "datasheet_file_id": "8763907065070653440",
+   "description": "-40℃~+85℃ 1.6mm x 0.8mm square LED 1.8V~2.4V 120° 20mA 300mcd 40mW 615nm~630nm 645nm Discrete Diode Red Water Clear 0603 LED Indication - Discrete ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C2286",
+   "manufacturer": "Hubei KENTO Elec",
+   "mpn": "KT-0603R",
+   "package": "0603",
+   "stock": 7215588,
+   "tier": "basic",
+   "unit_price_usd": 0.0076,
+   "refs": [
+    "D3"
+   ],
+   "value": "red",
+   "footprint": "LED_SMD:LED_0603_1608Metric"
+  },
+  {
+   "category": "Wire To Board Connector",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_JST-SM08B-SRSS-TB-LF-SN_C160407.pdf",
+   "datasheet_file_id": "8588894213878788096",
+   "description": "-25℃~+85℃ 1 10mm 1A 1mm 1x8P 2.9mm 4.32mm 50V 8 8P Auxiliary Solder Pin Copper alloy PA SH Surface Mount, Right Angle Tin UL94V-0 White SMD,P=1mm,卧贴 Wire To Board Connector ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C160407",
+   "manufacturer": "JST",
+   "mpn": "SM08B-SRSS-TB(LF)(SN)",
+   "package": "SMD,P=1mm,Surface Mount，Right Angle",
+   "stock": 78578,
+   "tier": "extended",
+   "unit_price_usd": 0.3322,
+   "refs": [
+    "J1"
+   ],
+   "value": "JST-SH 8P (ESC)",
+   "footprint": "Connector_JST:JST_SH_SM08B-SRSS-TB_1x08-1MP_P1.00mm_Horizontal"
+  },
+  {
+   "category": "Wire To Board Connector",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_JST-SM04B-GHS-TB-LF-SN_C189895.pdf",
+   "datasheet_file_id": "8588905132734365696",
+   "description": "-25℃~+85℃ 1 1.25mm 1A 1x4P 4 4.13mm 4.25mm 4P 50V 8.25mm Auxiliary Solder Pin GH PA9T Phosphor bronze Surface Mount, Right Angle Tin UL94V-0 White SMD,P=1.25mm,卧贴 Wire To Board Connector ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C189895",
+   "manufacturer": "JST",
+   "mpn": "SM04B-GHS-TB(LF)(SN)",
+   "package": "SMD,P=1.25mm,Surface Mount，Right Angle",
+   "stock": 29287,
+   "tier": "extended",
+   "unit_price_usd": 0.304,
+   "refs": [
+    "J2"
+   ],
+   "value": "JST-GH 4P (receiver)",
+   "footprint": "Connector_JST:JST_GH_SM04B-GHS-TB_1x04-1MP_P1.25mm_Horizontal"
+  },
+  {
+   "category": "USB Connectors",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2205251630_Korean-Hroparts-Elec-TYPE-C-31-M-12_C165948.pdf",
+   "datasheet_file_id": "8550723676069908480",
+   "description": "-30℃~+80℃ 1 10,000 cycles 16P 20V 5A 7.35mm Female Surface Mount, Right Angle Type-C SMD USB Connectors ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C165948",
+   "manufacturer": "Korean Hroparts Elec",
+   "mpn": "TYPE-C-31-M-12",
+   "package": "SMD",
+   "stock": 407216,
+   "tier": "extended",
+   "unit_price_usd": 0.186,
+   "refs": [
+    "J3"
+   ],
+   "value": "USB-C 16P",
+   "footprint": "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
+  },
+  {
+   "category": "Power Inductors",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_cjiang--Changjiang-Microelectronics-Tech-FNR3015S220MT_C167761.pdf",
+   "datasheet_file_id": "8588900810230517760",
+   "description": "22uH 598mΩ 680mA 690mA Magnetic Shielded Inductor ±20% SMD,3x3mm Power Inductors ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C167761",
+   "manufacturer": "cjiang (Changjiang Microelectronics Tech)",
+   "mpn": "FNR3015S220MT",
+   "package": "SMD,3x3mm",
+   "stock": 36955,
+   "tier": "extended",
+   "unit_price_usd": 0.0419,
+   "refs": [
+    "L1"
+   ],
+   "value": "22uH 3015",
+   "footprint": "Inductor_SMD:L_Changjiang_FNR3015S"
+  },
+  {
+   "category": "Chip Resistor - Surface Mount",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2205311900_UNI-ROYAL-Uniroyal-Elec-0402WGF1000TCE_C25076.pdf",
+   "datasheet_file_id": "8579705907481001984",
+   "description": "-55℃~+155℃ 100Ω 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C25076",
+   "manufacturer": "UNI-ROYAL(Uniroyal Elec)",
+   "mpn": "0402WGF1000TCE",
+   "package": "0402",
+   "stock": 9193333,
+   "tier": "basic",
+   "unit_price_usd": 0.0012,
+   "refs": [
+    "R1",
+    "R2",
+    "R9",
+    "R10",
+    "R11",
+    "R12"
+   ],
+   "value": "100",
+   "footprint": "Resistor_SMD:R_0402_1005Metric"
+  },
+  {
+   "category": "Chip Resistor - Surface Mount",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2206010045_UNI-ROYAL-Uniroyal-Elec-0402WGF5101TCE_C25905.pdf",
+   "datasheet_file_id": "8579706036003409920",
+   "description": "-55℃~+155℃ 5.1kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C25905",
+   "manufacturer": "UNI-ROYAL(Uniroyal Elec)",
+   "mpn": "0402WGF5101TCE",
+   "package": "0402",
+   "stock": 5591233,
+   "tier": "basic",
+   "unit_price_usd": 0.0024,
+   "refs": [
+    "R3",
+    "R4"
+   ],
+   "value": "5.1k",
+   "footprint": "Resistor_SMD:R_0402_1005Metric"
+  },
+  {
+   "category": "Chip Resistor - Surface Mount",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2206010100_UNI-ROYAL-Uniroyal-Elec-0402WGF1003TCE_C25741.pdf",
+   "datasheet_file_id": "8579705919464263680",
+   "description": "-55℃~+155℃ 100kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C25741",
+   "manufacturer": "UNI-ROYAL(Uniroyal Elec)",
+   "mpn": "0402WGF1003TCE",
+   "package": "0402",
+   "stock": 8442931,
+   "tier": "basic",
+   "unit_price_usd": 0.0021,
+   "refs": [
+    "R5",
+    "R13",
+    "R15"
+   ],
+   "value": "100k",
+   "footprint": "Resistor_SMD:R_0402_1005Metric"
+  },
+  {
+   "category": "Chip Resistor - Surface Mount",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2206010100_UNI-ROYAL-Uniroyal-Elec-0402WGF2202TCE_C25768.pdf",
+   "datasheet_file_id": "8579705997331927040",
+   "description": "-55℃~+155℃ 22kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C25768",
+   "manufacturer": "UNI-ROYAL(Uniroyal Elec)",
+   "mpn": "0402WGF2202TCE",
+   "package": "0402",
+   "stock": 738263,
+   "tier": "basic",
+   "unit_price_usd": 0.0024,
+   "refs": [
+    "R6"
+   ],
+   "value": "22k",
+   "footprint": "Resistor_SMD:R_0402_1005Metric"
+  },
+  {
+   "category": "Chip Resistor - Surface Mount",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2411221126_UNI-ROYAL-Uniroyal-Elec-0402WGF1002TCE_C25744.pdf",
+   "datasheet_file_id": "8556212101498380288",
+   "description": "-55℃~+155℃ 10kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C25744",
+   "manufacturer": "UNI-ROYAL(Uniroyal Elec)",
+   "mpn": "0402WGF1002TCE",
+   "package": "0402",
+   "stock": 19612339,
+   "tier": "basic",
+   "unit_price_usd": 0.0034,
+   "refs": [
+    "R7",
+    "R14",
+    "R16",
+    "R18",
+    "R19"
+   ],
+   "value": "10k",
+   "footprint": "Resistor_SMD:R_0402_1005Metric"
+  },
+  {
+   "category": "Chip Resistor - Surface Mount",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2206010216_UNI-ROYAL-Uniroyal-Elec-0402WGF1001TCE_C11702.pdf",
+   "datasheet_file_id": "8579705924167974912",
+   "description": "-55℃~+155℃ 1kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C11702",
+   "manufacturer": "UNI-ROYAL(Uniroyal Elec)",
+   "mpn": "0402WGF1001TCE",
+   "package": "0402",
+   "stock": 8210004,
+   "tier": "basic",
+   "unit_price_usd": 0.0035,
+   "refs": [
+    "R8",
+    "R17"
+   ],
+   "value": "1k",
+   "footprint": "Resistor_SMD:R_0402_1005Metric"
+  },
+  {
+   "category": "Microcontrollers (MCU/MPU/SOC)",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_STMicroelectronics-STM32G431KBU6_C529358.pdf",
+   "datasheet_file_id": "8588886251692417024",
+   "description": "-40℃~+85℃ 1.71V~3.6V 128KB 12bit 12bit 170MHz 26 32 Bit 32KB ARM Cortex-M4F Built-in FLASH UFQFPN-32(5x5) Microcontrollers (MCU/MPU/SOC) ROHS",
+   "fetched": "2026-10-13",
+   "lcsc": "C529358",
+   "manufacturer": "STMicroelectronics",
+   "mpn": "STM32G431KBU6",
+   "package": "UFQFPN-32(5x5)",
+   "stock": 1395,
+   "tier": "extended",
+   "unit_price_usd": 8.8481,
+   "refs": [
+    "U1"
+   ],
+   "value": "STM32G431KBU6",
+   "footprint": "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm"
+  },
+  {
+   "category": "DC-DC Converters",
+   "datasheet": "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2302220630_Texas-Instruments-LMR36506RRPER_C2870127.pdf",
+   "datasheet_file_id": "8589837741866450944",
+   "description": "-40℃~+150℃@(TJ) 1 18uA 200kHz~2.2MHz 3.6V~65V 600mA Adjustable Buck Buck Built-in Yes VQFN-9(2x2) DC-DC Converters ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C2870127",
+   "manufacturer": "Texas Instruments",
+   "mpn": "LMR36506RRPER",
+   "package": "VQFN-9(2x2)",
+   "stock": 2904,
+   "tier": "extended",
+   "unit_price_usd": 1.5587,
+   "refs": [
+    "U2"
+   ],
+   "value": "LMR36506 buck",
+   "footprint": "Rebot:VQFN-HR-9_2x2mm_TI_RPE0009A"
+  },
+  {
+   "category": "Voltage Regulators - Linear, Low Drop Out (LDO) Regulators",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Torex-Semicon-XC6206P332MR-G_C5446.pdf",
+   "datasheet_file_id": "8579707861620228096",
+   "description": "-40℃~+85℃@(Ta) 1 1uA 200mA 3.3V 6V Fixed Over Current Protection Positive SOT-23-3L Voltage Regulators - Linear, Low Drop Out (LDO) Regulators ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C5446",
+   "manufacturer": "Torex Semicon",
+   "mpn": "XC6206P332MR-G",
+   "package": "SOT-23-3L",
+   "stock": 422736,
+   "tier": "basic",
+   "unit_price_usd": 0.1429,
+   "refs": [
+    "U3"
+   ],
+   "value": "XC6206 3.3V",
+   "footprint": "Package_TO_SOT_SMD:SOT-23-3"
+  },
+  {
+   "category": "Accelerometers",
+   "datasheet": null,
+   "datasheet_file_id": "8603009365653659648",
+   "description": "-40℃~+85℃ 1.71V~3.6V 3uA 4.5KB IMU (accelerometer + gyroscope) Motion event detection、Synchronization and timestamp SPI、I2C、I3C X,Y,Z X,Y,Z ±32g ±4000dps LGA-14(2.5x3) Accelerometers ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C22461202",
+   "manufacturer": "STMicroelectronics",
+   "mpn": "LSM6DSV32XTR",
+   "package": "LGA-14(2.5x3)",
+   "stock": 4683,
+   "tier": "extended",
+   "unit_price_usd": 4.3617,
+   "refs": [
+    "U4"
+   ],
+   "value": "LSM6DSV32X",
+   "footprint": "Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y"
+  },
+  {
+   "category": "NOR FLASH",
+   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Winbond-Elec-W25Q128JVPIQ_C190862.pdf",
+   "datasheet_file_id": "8588881960005472256",
+   "description": "-40℃~+85℃ 100,000 cycles 10uA 120ms@(32KB) 128Mbit 133MHz 2.7V~3.6V 20 Years Power-on reset、Hardware write protection、Software write protection、Write enable latch、Absolute write protection、Power lock protection SPI WSON-8-EP(5x6) NOR FLASH ROHS",
+   "fetched": "2026-10-11",
+   "lcsc": "C190862",
+   "manufacturer": "Winbond Elec",
+   "mpn": "W25Q128JVPIQ",
+   "package": "WSON-8-EP(5x6)",
+   "stock": 10314,
+   "tier": "extended",
+   "unit_price_usd": 3.3812,
+   "refs": [
+    "U5"
+   ],
+   "value": "W25Q128JV 16MB",
+   "footprint": "Package_SON:WSON-8-1EP_6x5mm_P1.27mm_EP3.4x4.3mm"
+  }
+ ],
+ "stats": {
+  "size_mm": [
+   25.05,
+   25.05
+  ],
+  "tracks": 478,
+  "vias": 102,
+  "track_length": 576.91,
+  "unrouted": 0,
+  "parts": 57
+ }
+}

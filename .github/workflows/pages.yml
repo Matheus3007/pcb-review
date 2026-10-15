@@ -26,7 +26,10 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci
         working-directory: web
-      - name: Browser tests (selection, 3D picking)
+      - name: Unit tests (importer parity with the Python exporter)
+        working-directory: web
+        run: npx tsc --noEmit && npx vitest run
+      - name: Browser tests (selection, 3D picking, opening local boards)
         working-directory: web
         run: |
           npx playwright install --with-deps chromium

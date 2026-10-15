@@ -7,7 +7,9 @@ Review the PCBs that [pcb-lab](../pcb-lab) generates in a browser, without KiCad
 - **3D**: the assembled board in three.js, using the real KiCad/EasyEDA STEP models converted to GLB. Tracks and pours show under the solder mask. **X-ray** (key `x`) makes the board translucent and shows every copper layer in its 2D colour. The selected net is drawn on top, with via barrels where it changes layer.
 - **BOM** with LCSC/JLC links, and **Checks**: pcb-lab's check report plus KiCad DRC. Click a designator or a DRC marker to jump to it in the copper view.
 
-Deep links work: `#net=CRSF_RX&ref=U1&pin=19`, `#tab=3d`. Several boards can be hosted side by side; `?board=<name>` picks one.
+Deep links work: `#net=CRSF_RX&ref=U1&pin=19`, `#tab=3d`. Several boards can be hosted side by side; `?board=<name>` picks one, and `?bundle=<url>` loads any exported `board.json`.
+
+**Any pcb-lab board, without exporting:** use **Open…**, or drop a board folder (`boards/<name>`), its `build/` folder, or a `.zip` of either anywhere on the page. It is parsed in the browser (`web/src/importer/`, a TypeScript port of the exporter) and nothing is uploaded. Datasheet links, pin pages and 3D models come from the published `bundles/library.json`, built from pcb-lab's part library; parts and models it doesn't know show as LCSC links and boxes.
 
 ## Use
 

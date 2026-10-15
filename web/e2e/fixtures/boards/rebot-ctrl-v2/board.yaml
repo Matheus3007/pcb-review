@@ -1,0 +1,10 @@
+# Machine-readable board config (human-facing requirements live in spec.md).
+layers: 4                   # F signal | In1 GND | In2 signal | B GND (see routing.yaml)
+thickness: 1.0
+assembly_tier: economic     # one-sided
+origin: [100.0, 100.0]
+rules:
+  hole_to_hole: 0.3      # only vias are close (the USB shell holes are far apart); JLC via hole-to-hole min 0.2, pad holes 0.45 (docs/jlcpcb.md)
+  min_track_width: 0.1   # Freerouting necks traces down to ~0.112 mm at 0.5 mm-pitch QFN/LGA pins; JLC multilayer min is 0.09 (docs/jlcpcb.md)
+silk_refs: false
+quantity: 5

@@ -1,0 +1,2386 @@
+{
+ "name": "rebot-ctrl-v2",
+ "parts": [
+  {
+   "ref": "J1",
+   "footprint": "Connector_JST:JST_SH_SM08B-SRSS-TB_1x08-1MP_P1.00mm_Horizontal",
+   "value": "JST-SH 8P (ESC)",
+   "lcsc": "C160407",
+   "mpn": "SM08B-SRSS-TB",
+   "dnp": false,
+   "block": "ESC connector (JST-SH 8P, G V 1 2 3 4 C T)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ],
+    "3": [
+     "3"
+    ],
+    "4": [
+     "4"
+    ],
+    "5": [
+     "5"
+    ],
+    "6": [
+     "6"
+    ],
+    "7": [
+     "7"
+    ],
+    "8": [
+     "8"
+    ],
+    "MP": [
+     "MP"
+    ]
+   },
+   "pad_nets": {
+    "1": "GND",
+    "MP": "GND",
+    "2": "VBAT",
+    "3": "M1",
+    "4": "M2",
+    "5": "M3",
+    "6": "M4",
+    "7": "ESC_CURR",
+    "8": "ESC_TLM"
+   },
+   "meta": {
+    "lib_key": "SM08B-SRSS-TB",
+    "lcsc": "C160407",
+    "value": "JST-SH 8P (ESC)",
+    "footprint": "Connector_JST:JST_SH_SM08B-SRSS-TB_1x08-1MP_P1.00mm_Horizontal",
+    "symbol": "Connector_Generic_MountingPin:Conn_01x08_MountingPin",
+    "symbol_aliases": {
+     "MP": "MountPin"
+    },
+    "pinout_source": "connector: pin n = pad n (JST SH SM08B, KiCad stock footprint); signal order matches the FPV 4-in-1 cable, see rebot-ctrl spec",
+    "pinout_verified": "2026-10-11",
+    "extended_reason": "No JST-SH in JLC Basic/Preferred; the 8-pin SH is the standard FC-to-4in1 ESC connector (genuine JST, 78k stock)."
+   }
+  },
+  {
+   "ref": "J2",
+   "footprint": "Connector_JST:JST_GH_SM04B-GHS-TB_1x04-1MP_P1.25mm_Horizontal",
+   "value": "JST-GH 4P (receiver)",
+   "lcsc": "C189895",
+   "mpn": "SM04B-GHS-TB",
+   "dnp": false,
+   "block": "Receiver connector (JST-GH 4P, CRSF)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ],
+    "3": [
+     "3"
+    ],
+    "4": [
+     "4"
+    ],
+    "MP": [
+     "MP"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "MP": "GND",
+    "1": "+5V",
+    "3": "CRSF_IN",
+    "4": "CRSF_OUT"
+   },
+   "meta": {
+    "lib_key": "SM04B-GHS-TB",
+    "lcsc": "C189895",
+    "value": "JST-GH 4P (receiver)",
+    "footprint": "Connector_JST:JST_GH_SM04B-GHS-TB_1x04-1MP_P1.25mm_Horizontal",
+    "symbol": "Connector_Generic_MountingPin:Conn_01x04_MountingPin",
+    "symbol_aliases": {
+     "MP": "MountPin"
+    },
+    "pinout_source": "connector: pin n = pad n (JST GH SM04B, KiCad stock footprint)",
+    "pinout_verified": "2026-10-11",
+    "extended_reason": "Owner wants a locking connector for the receiver; no JST-GH in JLC Basic/Preferred (genuine JST)."
+   }
+  },
+  {
+   "ref": "R1",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100",
+   "lcsc": "C25076",
+   "mpn": null,
+   "dnp": false,
+   "block": "Receiver connector (JST-GH 4P, CRSF)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "CRSF_IN",
+    "2": "CRSF_RX"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R2",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100",
+   "lcsc": "C25076",
+   "mpn": null,
+   "dnp": false,
+   "block": "Receiver connector (JST-GH 4P, CRSF)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "CRSF_OUT",
+    "2": "CRSF_TX"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "J3",
+   "footprint": "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
+   "value": "USB-C 16P",
+   "lcsc": "C165948",
+   "mpn": "TYPE-C-31-M-12",
+   "dnp": false,
+   "block": "USB-C (device)",
+   "pins": {
+    "GND": [
+     "A1",
+     "A12",
+     "B1",
+     "B12"
+    ],
+    "VBUS": [
+     "A4",
+     "A9",
+     "B4",
+     "B9"
+    ],
+    "CC1": [
+     "A5"
+    ],
+    "CC2": [
+     "B5"
+    ],
+    "DP1": [
+     "A6"
+    ],
+    "DN1": [
+     "A7"
+    ],
+    "DP2": [
+     "B6"
+    ],
+    "DN2": [
+     "B7"
+    ],
+    "SBU1": [
+     "A8"
+    ],
+    "SBU2": [
+     "B8"
+    ],
+    "SHIELD": [
+     "SH"
+    ]
+   },
+   "pad_nets": {
+    "A1": "GND",
+    "A12": "GND",
+    "B1": "GND",
+    "B12": "GND",
+    "SH": "GND",
+    "A4": "VBUS",
+    "A9": "VBUS",
+    "B4": "VBUS",
+    "B9": "VBUS",
+    "A5": "CC1",
+    "B5": "CC2",
+    "A6": "USB_DP",
+    "B6": "USB_DP",
+    "A7": "USB_DM",
+    "B7": "USB_DM"
+   },
+   "meta": {
+    "lib_key": "TYPE-C-31-M-12",
+    "lcsc": "C165948",
+    "value": "USB-C 16P",
+    "footprint": "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
+    "symbol": "Connector:USB_C_Receptacle_USB2.0_16P",
+    "extended_reason": "Phase 0 demo; Basic/Preferred USB-C 16P alternatives not searched (owner: no need to optimize this board)",
+    "zone_connection": {
+     "SH": "full"
+    },
+    "model": {
+     "path": "lib/3d/HRO_TYPE-C-31-M-12_C165948.step",
+     "offset": [
+      0,
+      -1.07,
+      0
+     ],
+     "rotate": [
+      0,
+      0,
+      180
+     ]
+    },
+    "pinout_source": "USB Type-C spec pin names; KiCad footprint is specific to this exact part (HRO TYPE-C-31-M-12), pads named by spec pin",
+    "pinout_verified": "2026-10-11"
+   }
+  },
+  {
+   "ref": "R3",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "5.1k",
+   "lcsc": "C25905",
+   "mpn": null,
+   "dnp": false,
+   "block": "USB-C (device)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "CC1"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R4",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "5.1k",
+   "lcsc": "C25905",
+   "mpn": null,
+   "dnp": false,
+   "block": "USB-C (device)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "CC2"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "D2",
+   "footprint": "Diode_SMD:D_SOD-323",
+   "value": "B5819WS 40V 1A",
+   "lcsc": "C64886",
+   "mpn": "B5819WS",
+   "dnp": false,
+   "block": "USB-C (device)",
+   "pins": {
+    "K": [
+     "1"
+    ],
+    "A": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "+5V",
+    "2": "VBUS"
+   },
+   "meta": {
+    "lib_key": "B5819WS",
+    "lcsc": "C64886",
+    "value": "B5819WS 40V 1A",
+    "footprint": "Diode_SMD:D_SOD-323",
+    "symbol": "Device:D_Schottky",
+    "pinout_source": "two-terminal diode; KiCad SOD-323 pad 1 = cathode (band), symbol pin 1 = K",
+    "pinout_verified": "2026-10-11",
+    "notes": "JLC Preferred (no setup fee). 40 V, 1 A. Smaller sibling of B5819W SL for tight spots. Check the cathode band in JLC's preview."
+   }
+  },
+  {
+   "ref": "U2",
+   "footprint": "Rebot:VQFN-HR-9_2x2mm_TI_RPE0009A",
+   "value": "LMR36506 buck",
+   "lcsc": "C2870127",
+   "mpn": "LMR36506RRPER",
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "RT": [
+     "1"
+    ],
+    "PGOOD": [
+     "2"
+    ],
+    "EN": [
+     "3"
+    ],
+    "VIN": [
+     "4"
+    ],
+    "SW": [
+     "5"
+    ],
+    "BOOT": [
+     "6"
+    ],
+    "VCC": [
+     "7"
+    ],
+    "FB": [
+     "8"
+    ],
+    "GND": [
+     "9"
+    ]
+   },
+   "pad_nets": {
+    "9": "GND",
+    "4": "VBAT",
+    "3": "VBAT",
+    "7": "BUCK_VCC",
+    "1": "BUCK_VCC",
+    "5": "BUCK_SW",
+    "6": "BUCK_BOOT",
+    "8": "BUCK_FB"
+   },
+   "meta": {
+    "lib_key": "LMR36506RRPER",
+    "lcsc": "C2870127",
+    "value": "LMR36506 buck",
+    "footprint": "Rebot:VQFN-HR-9_2x2mm_TI_RPE0009A",
+    "symbol": "Rebot:LMR36506RRPE",
+    "pinout_source": "TI LMR36506 ZHCSKN9B (rev. Dec 2022) p.4 fig.6-1 (FB variant, right) + table 6-1; RRPER = adjustable output, RT, PFM (p.3 device comparison)",
+    "pinout_verified": "2026-10-11",
+    "model": {
+     "path": "lib/3d/LMR36506RRPER_C2870127.step",
+     "offset": [
+      0,
+      0,
+      0.9
+     ]
+    },
+    "extended_reason": "Self-contained ESC module needs a buck from 6S LiHV (26.1 V + spikes); no 40 V+ buck in JLC Basic/Preferred (XL1509/TPS5430 are 36-40 V SOIC-8 with large inductors). 65 V rating, 2x2 mm.",
+    "notes": "Vin 3.6-65 V, 0.6 A. VREF 1.0 V: VOUT = 1 + RFBT/RFBB (RFBT 100k recommended). RT to VCC = 1 MHz, to GND = 2.2 MHz (table 8-1). Required: CIN 2.2 uF + 100 nF HF at VIN, CBOOT 100 nF BOOT-SW, CVCC 1 uF VCC-GND (VCC: no external loads). EN may tie to VIN. PGOOD open-drain, may float or ground. Footprint: EasyEDA geometry checked against TI land pattern p.52."
+   }
+  },
+  {
+   "ref": "L1",
+   "footprint": "Inductor_SMD:L_Changjiang_FNR3015S",
+   "value": "22uH 3015",
+   "lcsc": "C167761",
+   "mpn": "FNR3015S220MT",
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "BUCK_SW",
+    "2": "V5_BUCK"
+   },
+   "meta": {
+    "lib_key": "FNR3015S220MT",
+    "lcsc": "C167761",
+    "value": "22uH 3015",
+    "footprint": "Inductor_SMD:L_Changjiang_FNR3015S",
+    "symbol": "Device:L",
+    "pinout_source": "two-terminal inductor, unpolarized; KiCad stock footprint for this exact series",
+    "pinout_verified": "2026-10-11",
+    "extended_reason": "No power inductor (only multilayer signal inductors <=15 mA) in JLC Basic/Preferred.",
+    "notes": "Changjiang FNR3015S 22 uH +-20%, Isat 680 mA, DCR 598 mOhm, 3x3x1.5 mm shielded. Ripple at 24 V in / 11 V out / 1 MHz = 0.27 A p-p."
+   }
+  },
+  {
+   "ref": "C1",
+   "footprint": "Capacitor_SMD:C_0805_2012Metric",
+   "value": "2.2uF",
+   "lcsc": "C377773",
+   "mpn": null,
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "VBAT"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0805"
+   }
+  },
+  {
+   "ref": "C2",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "VBAT"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C3",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "BUCK_SW",
+    "1": "BUCK_BOOT"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C4",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "1uF",
+   "lcsc": "C52923",
+   "mpn": null,
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "BUCK_VCC"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C5",
+   "footprint": "Capacitor_SMD:C_0805_2012Metric",
+   "value": "22uF",
+   "lcsc": "C45783",
+   "mpn": null,
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "V5_BUCK"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0805"
+   }
+  },
+  {
+   "ref": "R5",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100k",
+   "lcsc": "C25741",
+   "mpn": null,
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "V5_BUCK",
+    "2": "BUCK_FB"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R6",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "22k",
+   "lcsc": "C25768",
+   "mpn": null,
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "BUCK_FB"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "D1",
+   "footprint": "Diode_SMD:D_SOD-323",
+   "value": "B5819WS 40V 1A",
+   "lcsc": "C64886",
+   "mpn": "B5819WS",
+   "dnp": false,
+   "block": "Buck VBAT -> 5.5V (LMR36506, 65 V)",
+   "pins": {
+    "K": [
+     "1"
+    ],
+    "A": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "+5V",
+    "2": "V5_BUCK"
+   },
+   "meta": {
+    "lib_key": "B5819WS",
+    "lcsc": "C64886",
+    "value": "B5819WS 40V 1A",
+    "footprint": "Diode_SMD:D_SOD-323",
+    "symbol": "Device:D_Schottky",
+    "pinout_source": "two-terminal diode; KiCad SOD-323 pad 1 = cathode (band), symbol pin 1 = K",
+    "pinout_verified": "2026-10-11",
+    "notes": "JLC Preferred (no setup fee). 40 V, 1 A. Smaller sibling of B5819W SL for tight spots. Check the cathode band in JLC's preview."
+   }
+  },
+  {
+   "ref": "U3",
+   "footprint": "Package_TO_SOT_SMD:SOT-23-3",
+   "value": "XC6206 3.3V",
+   "lcsc": "C5446",
+   "mpn": "XC6206P332MR-G",
+   "dnp": false,
+   "block": "+5V rail and 3.3 V LDO",
+   "pins": {
+    "VSS": [
+     "1"
+    ],
+    "VOUT": [
+     "2"
+    ],
+    "VIN": [
+     "3"
+    ]
+   },
+   "pad_nets": {
+    "1": "GND",
+    "3": "+5V",
+    "2": "3V3"
+   },
+   "meta": {
+    "lib_key": "XC6206P332MR-G",
+    "lcsc": "C5446",
+    "value": "XC6206 3.3V",
+    "footprint": "Package_TO_SOT_SMD:SOT-23-3",
+    "symbol": "Regulator_Linear:XC6206PxxxMR",
+    "pinout_source": "Torex ETR0305_004b p.2 PIN ASSIGNMENT, SOT-23 column (1=VSS, 2=VOUT, 3=VIN)",
+    "pinout_verified": "2026-10-11",
+    "notes": "Torex original. Clones (e.g. UMW XC6206P332MR) are documented with different pin orders, so never substitute without re-checking. Vin max 6.0V operating."
+   }
+  },
+  {
+   "ref": "C6",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "4.7uF",
+   "lcsc": "C23733",
+   "mpn": null,
+   "dnp": false,
+   "block": "+5V rail and 3.3 V LDO",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "+5V"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C7",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "1uF",
+   "lcsc": "C52923",
+   "mpn": null,
+   "dnp": false,
+   "block": "+5V rail and 3.3 V LDO",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "+5V"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C8",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "1uF",
+   "lcsc": "C52923",
+   "mpn": null,
+   "dnp": false,
+   "block": "+5V rail and 3.3 V LDO",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C9",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "4.7uF",
+   "lcsc": "C23733",
+   "mpn": null,
+   "dnp": false,
+   "block": "+5V rail and 3.3 V LDO",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "U1",
+   "footprint": "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm",
+   "value": "STM32G431KBU6",
+   "lcsc": "C529358",
+   "mpn": "STM32G431KBU6",
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "VDD": [
+     "1",
+     "17"
+    ],
+    "PF0": [
+     "2"
+    ],
+    "PF1": [
+     "3"
+    ],
+    "PG10": [
+     "4"
+    ],
+    "PA0": [
+     "5"
+    ],
+    "PA1": [
+     "6"
+    ],
+    "PA2": [
+     "7"
+    ],
+    "PA3": [
+     "8"
+    ],
+    "PA4": [
+     "9"
+    ],
+    "PA5": [
+     "10"
+    ],
+    "PA6": [
+     "11"
+    ],
+    "PA7": [
+     "12"
+    ],
+    "PB0": [
+     "13"
+    ],
+    "VSSA": [
+     "14"
+    ],
+    "VDDA": [
+     "15"
+    ],
+    "VSS": [
+     "16",
+     "32",
+     "33"
+    ],
+    "PA8": [
+     "18"
+    ],
+    "PA9": [
+     "19"
+    ],
+    "PA10": [
+     "20"
+    ],
+    "PA11": [
+     "21"
+    ],
+    "PA12": [
+     "22"
+    ],
+    "PA13": [
+     "23"
+    ],
+    "PA14": [
+     "24"
+    ],
+    "PA15": [
+     "25"
+    ],
+    "PB3": [
+     "26"
+    ],
+    "PB4": [
+     "27"
+    ],
+    "PB5": [
+     "28"
+    ],
+    "PB6": [
+     "29"
+    ],
+    "PB7": [
+     "30"
+    ],
+    "PB8": [
+     "31"
+    ]
+   },
+   "pad_nets": {
+    "16": "GND",
+    "32": "GND",
+    "33": "GND",
+    "14": "GND",
+    "22": "USB_DP",
+    "21": "USB_DM",
+    "1": "3V3",
+    "17": "3V3",
+    "15": "3V3",
+    "4": "NRST",
+    "31": "BOOT0",
+    "13": "LED",
+    "23": "SWDIO",
+    "24": "SWCLK",
+    "19": "CRSF_RX",
+    "20": "CRSF_TX",
+    "5": "DSHOT1",
+    "6": "DSHOT2",
+    "7": "DSHOT3",
+    "8": "DSHOT4",
+    "9": "CURR_ADC",
+    "2": "VBAT_ADC",
+    "25": "TLM_RX",
+    "26": "SPI_SCK",
+    "27": "SPI_MISO",
+    "28": "SPI_MOSI",
+    "29": "IMU_CS",
+    "30": "FLASH_CS",
+    "18": "IMU_INT1"
+   },
+   "meta": {
+    "lib_key": "STM32G431KBU6",
+    "lcsc": "C529358",
+    "value": "STM32G431KBU6",
+    "footprint": "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm",
+    "symbol": "MCU_ST_STM32G4:STM32G431KBUx",
+    "pinout_source": "ST DS12589 Rev 2 p.44 fig.5 UFQFPN32 pinout; table 12 p.51-60 UFQFPN32 column; EP (33): p.165 fig.40 note 2 'connect and solder this backside pad to PCB ground'. AF table 13 p.61-62. KiCad STM32G431KBUx symbol agrees pin for pin (EP = VSS 33)",
+    "pinout_verified": "2026-10-13",
+    "model": {
+     "path": "${KICAD10_3DMODEL_DIR}/Package_DFN_QFN.3dshapes/QFN-32-1EP_5x5mm_P0.5mm_EP3.45x3.45mm.step"
+    },
+    "extended_reason": "No STM32 G4 in JLC Basic/Preferred. Same die as the CBU6 (rebot-ctrl v1) in the 5x5 package, for rebot-ctrl-v2's smaller outline.",
+    "notes": "No VBAT/VREF+ pins (tied to VDD/VDDA inside). PG10 = NRST, PB8 = BOOT0. 26 I/Os: no PB1/PB2/PB9+/PC*. AFs used on rebot-ctrl-v2: TIM2_CH1-4 = PA0-PA3 (AF1), USART1 on PA9/PA10 (AF7; TX/RX swapped in CR2), USART2_RX = PA15 (AF7), SPI1 SCK/MISO/MOSI = PB3/PB4/PB5 (AF5). ADC: PA4 = ADC2_IN17, PF0 = ADC1_IN10 (table 12 p.51)."
+   }
+  },
+  {
+   "ref": "C10",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C11",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C13",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "4.7uF",
+   "lcsc": "C23733",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C14",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "1uF",
+   "lcsc": "C52923",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C15",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C16",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "NRST"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R7",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "10k",
+   "lcsc": "C25744",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "BOOT0"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R8",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "1k",
+   "lcsc": "C11702",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "LED",
+    "2": "LED_A"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "D3",
+   "footprint": "LED_SMD:LED_0603_1608Metric",
+   "value": "red",
+   "lcsc": "C2286",
+   "mpn": null,
+   "dnp": false,
+   "block": "MCU STM32G431KBU6",
+   "pins": {
+    "K": [
+     "1"
+    ],
+    "A": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "GND",
+    "2": "LED_A"
+   },
+   "meta": {
+    "kind": "LED",
+    "size": "0603"
+   }
+  },
+  {
+   "ref": "R9",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100",
+   "lcsc": "C25076",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "M1",
+    "2": "DSHOT1"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R10",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100",
+   "lcsc": "C25076",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "M2",
+    "2": "DSHOT2"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R11",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100",
+   "lcsc": "C25076",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "M3",
+    "2": "DSHOT3"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R12",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100",
+   "lcsc": "C25076",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "M4",
+    "2": "DSHOT4"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R13",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100k",
+   "lcsc": "C25741",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "ESC_CURR",
+    "2": "CURR_ADC"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R14",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "10k",
+   "lcsc": "C25744",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "CURR_ADC"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C17",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "10nF",
+   "lcsc": "C15195",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "CURR_ADC"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R15",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "100k",
+   "lcsc": "C25741",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "VBAT",
+    "2": "VBAT_ADC"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R16",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "10k",
+   "lcsc": "C25744",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "VBAT_ADC"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C18",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "10nF",
+   "lcsc": "C15195",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "VBAT_ADC"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R17",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "1k",
+   "lcsc": "C11702",
+   "mpn": null,
+   "dnp": false,
+   "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "1": "ESC_TLM",
+    "2": "TLM_RX"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "U4",
+   "footprint": "Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y",
+   "value": "LSM6DSV32X",
+   "lcsc": "C22461202",
+   "mpn": "LSM6DSV32XTR",
+   "dnp": false,
+   "block": "IMU LSM6DSV32X + 16 MB log flash (SPI1)",
+   "pins": {
+    "SDO": [
+     "1"
+    ],
+    "SDX": [
+     "2"
+    ],
+    "SCX": [
+     "3"
+    ],
+    "INT1": [
+     "4"
+    ],
+    "VDDIO": [
+     "5"
+    ],
+    "GND": [
+     "6",
+     "7"
+    ],
+    "VDD": [
+     "8"
+    ],
+    "INT2": [
+     "9"
+    ],
+    "NC": [
+     "10",
+     "11"
+    ],
+    "CS": [
+     "12"
+    ],
+    "SCL": [
+     "13"
+    ],
+    "SDA": [
+     "14"
+    ]
+   },
+   "pad_nets": {
+    "6": "GND",
+    "7": "GND",
+    "2": "GND",
+    "3": "GND",
+    "8": "3V3",
+    "5": "3V3",
+    "13": "SPI_SCK",
+    "1": "SPI_MISO",
+    "14": "SPI_MOSI",
+    "12": "IMU_CS",
+    "4": "IMU_INT1"
+   },
+   "meta": {
+    "lib_key": "LSM6DSV32XTR",
+    "lcsc": "C22461202",
+    "value": "LSM6DSV32X",
+    "footprint": "Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y",
+    "symbol": "Sensor_Motion:LSM6DSL",
+    "symbol_aliases": {
+     "SDO": "SDO/SA0"
+    },
+    "pinout_source": "ST LSM6DSV32X DS13511 Rev 2 p.11 table 2 (pin description); same LGA-14 2.5x3 pinout as the LSM6DSL symbol",
+    "pinout_verified": "2026-10-11",
+    "extended_reason": "No IMU in JLC Basic/Preferred except the MPU-6050 (16 g, obsolete, $20). +-32 g / +-4000 dps for weapon hits; LSM6DSV family = Team-Micras driver.",
+    "notes": "SPI mode: CS low = SPI. Pins 2/3 (SDx/SCx) must go to VDD_IO or GND when the analog hub/Qvar is unused; 10/11 (OCS_Aux/SDO_Aux) may be left unconnected (soldered). 100 nF on VDD and VDD_IO."
+   }
+  },
+  {
+   "ref": "U5",
+   "footprint": "Package_SON:WSON-8-1EP_6x5mm_P1.27mm_EP3.4x4.3mm",
+   "value": "W25Q128JV 16MB",
+   "lcsc": "C190862",
+   "mpn": "W25Q128JVPIQ",
+   "dnp": false,
+   "block": "IMU LSM6DSV32X + 16 MB log flash (SPI1)",
+   "pins": {
+    "CS": [
+     "1"
+    ],
+    "DO": [
+     "2"
+    ],
+    "WP": [
+     "3"
+    ],
+    "GND": [
+     "4"
+    ],
+    "DI": [
+     "5"
+    ],
+    "CLK": [
+     "6"
+    ],
+    "HOLD": [
+     "7"
+    ],
+    "VCC": [
+     "8"
+    ],
+    "EP": [
+     "9"
+    ]
+   },
+   "pad_nets": {
+    "4": "GND",
+    "9": "GND",
+    "8": "3V3",
+    "3": "3V3",
+    "7": "3V3",
+    "6": "SPI_SCK",
+    "2": "SPI_MISO",
+    "5": "SPI_MOSI",
+    "1": "FLASH_CS"
+   },
+   "meta": {
+    "lib_key": "W25Q128JVPIQ",
+    "lcsc": "C190862",
+    "value": "W25Q128JV 16MB",
+    "footprint": "Package_SON:WSON-8-1EP_6x5mm_P1.27mm_EP3.4x4.3mm",
+    "symbol": "Memory_Flash:W25Q128JVP",
+    "symbol_aliases": {
+     "CS": "~{CS}",
+     "DO": "DO/IO_{1}",
+     "WP": "~{WP}/IO_{2}",
+     "DI": "DI/IO_{0}",
+     "HOLD": "~{HOLD}/~{RESET}/IO_{3}"
+    },
+    "pinout_source": "Winbond W25Q128JV datasheet p.5 fig.1b WSON 6x5 pad assignment + table 3.3; KiCad W25Q128JVP symbol agrees",
+    "pinout_verified": "2026-10-11",
+    "extended_reason": "The Basic W25Q128JVSIQ is SOIC-8 208 mil (about 8 x 5.3 mm); the WSON 6x5 saves area and weight on a ~2 g board.",
+    "notes": "2.7-3.6 V. /WP and /HOLD tied high for standard SPI. Exposed pad: GND."
+   }
+  },
+  {
+   "ref": "C19",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "IMU LSM6DSV32X + 16 MB log flash (SPI1)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C20",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "IMU LSM6DSV32X + 16 MB log flash (SPI1)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "C21",
+   "footprint": "Capacitor_SMD:C_0402_1005Metric",
+   "value": "100nF",
+   "lcsc": "C307331",
+   "mpn": null,
+   "dnp": false,
+   "block": "IMU LSM6DSV32X + 16 MB log flash (SPI1)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "GND",
+    "1": "3V3"
+   },
+   "meta": {
+    "kind": "C",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R18",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "10k",
+   "lcsc": "C25744",
+   "mpn": null,
+   "dnp": false,
+   "block": "IMU LSM6DSV32X + 16 MB log flash (SPI1)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "3V3",
+    "1": "IMU_CS"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "R19",
+   "footprint": "Resistor_SMD:R_0402_1005Metric",
+   "value": "10k",
+   "lcsc": "C25744",
+   "mpn": null,
+   "dnp": false,
+   "block": "IMU LSM6DSV32X + 16 MB log flash (SPI1)",
+   "pins": {
+    "1": [
+     "1"
+    ],
+    "2": [
+     "2"
+    ]
+   },
+   "pad_nets": {
+    "2": "3V3",
+    "1": "FLASH_CS"
+   },
+   "meta": {
+    "kind": "R",
+    "size": "0402"
+   }
+  },
+  {
+   "ref": "TP1",
+   "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+   "value": "pad",
+   "lcsc": null,
+   "mpn": "TestPoint_1mm",
+   "dnp": true,
+   "block": "SWD + boot test pads",
+   "pins": {
+    "1": [
+     "1"
+    ]
+   },
+   "pad_nets": {
+    "1": "3V3"
+   },
+   "meta": {
+    "lib_key": "TestPoint_1mm",
+    "lcsc": null,
+    "dnp": true,
+    "value": "pad",
+    "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+    "symbol": "Connector:TestPoint",
+    "pinout_source": "single test pad",
+    "pinout_verified": "2026-10-11"
+   }
+  },
+  {
+   "ref": "TP2",
+   "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+   "value": "pad",
+   "lcsc": null,
+   "mpn": "TestPoint_1mm",
+   "dnp": true,
+   "block": "SWD + boot test pads",
+   "pins": {
+    "1": [
+     "1"
+    ]
+   },
+   "pad_nets": {
+    "1": "GND"
+   },
+   "meta": {
+    "lib_key": "TestPoint_1mm",
+    "lcsc": null,
+    "dnp": true,
+    "value": "pad",
+    "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+    "symbol": "Connector:TestPoint",
+    "pinout_source": "single test pad",
+    "pinout_verified": "2026-10-11"
+   }
+  },
+  {
+   "ref": "TP3",
+   "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+   "value": "pad",
+   "lcsc": null,
+   "mpn": "TestPoint_1mm",
+   "dnp": true,
+   "block": "SWD + boot test pads",
+   "pins": {
+    "1": [
+     "1"
+    ]
+   },
+   "pad_nets": {
+    "1": "SWDIO"
+   },
+   "meta": {
+    "lib_key": "TestPoint_1mm",
+    "lcsc": null,
+    "dnp": true,
+    "value": "pad",
+    "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+    "symbol": "Connector:TestPoint",
+    "pinout_source": "single test pad",
+    "pinout_verified": "2026-10-11"
+   }
+  },
+  {
+   "ref": "TP4",
+   "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+   "value": "pad",
+   "lcsc": null,
+   "mpn": "TestPoint_1mm",
+   "dnp": true,
+   "block": "SWD + boot test pads",
+   "pins": {
+    "1": [
+     "1"
+    ]
+   },
+   "pad_nets": {
+    "1": "SWCLK"
+   },
+   "meta": {
+    "lib_key": "TestPoint_1mm",
+    "lcsc": null,
+    "dnp": true,
+    "value": "pad",
+    "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+    "symbol": "Connector:TestPoint",
+    "pinout_source": "single test pad",
+    "pinout_verified": "2026-10-11"
+   }
+  },
+  {
+   "ref": "TP5",
+   "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+   "value": "pad",
+   "lcsc": null,
+   "mpn": "TestPoint_1mm",
+   "dnp": true,
+   "block": "SWD + boot test pads",
+   "pins": {
+    "1": [
+     "1"
+    ]
+   },
+   "pad_nets": {
+    "1": "NRST"
+   },
+   "meta": {
+    "lib_key": "TestPoint_1mm",
+    "lcsc": null,
+    "dnp": true,
+    "value": "pad",
+    "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+    "symbol": "Connector:TestPoint",
+    "pinout_source": "single test pad",
+    "pinout_verified": "2026-10-11"
+   }
+  },
+  {
+   "ref": "TP6",
+   "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+   "value": "pad",
+   "lcsc": null,
+   "mpn": "TestPoint_1mm",
+   "dnp": true,
+   "block": "SWD + boot test pads",
+   "pins": {
+    "1": [
+     "1"
+    ]
+   },
+   "pad_nets": {
+    "1": "BOOT0"
+   },
+   "meta": {
+    "lib_key": "TestPoint_1mm",
+    "lcsc": null,
+    "dnp": true,
+    "value": "pad",
+    "footprint": "TestPoint:TestPoint_Pad_D1.0mm",
+    "symbol": "Connector:TestPoint",
+    "pinout_source": "single test pad",
+    "pinout_verified": "2026-10-11"
+   }
+  }
+ ],
+ "nets": {
+  "GND": {
+   "class": "Power",
+   "pins": [
+    "J1.1",
+    "J1.MP",
+    "J2.2",
+    "J2.MP",
+    "J3.GND",
+    "J3.SHIELD",
+    "R3.2",
+    "R4.2",
+    "U2.GND",
+    "C1.2",
+    "C2.2",
+    "C4.2",
+    "C5.2",
+    "R6.2",
+    "U3.VSS",
+    "C6.2",
+    "C7.2",
+    "C8.2",
+    "C9.2",
+    "U1.VSS",
+    "U1.VSSA",
+    "C10.2",
+    "C11.2",
+    "C13.2",
+    "C14.2",
+    "C15.2",
+    "C16.2",
+    "R7.2",
+    "D3.K",
+    "R14.2",
+    "C17.2",
+    "R16.2",
+    "C18.2",
+    "U4.GND",
+    "U4.SDX",
+    "U4.SCX",
+    "U5.GND",
+    "U5.EP",
+    "C19.2",
+    "C20.2",
+    "C21.2",
+    "TP2.1"
+   ]
+  },
+  "VBAT": {
+   "class": "Power",
+   "pins": [
+    "J1.2",
+    "U2.VIN",
+    "U2.EN",
+    "C1.1",
+    "C2.1",
+    "R15.1"
+   ]
+  },
+  "M1": {
+   "class": "Default",
+   "pins": [
+    "J1.3",
+    "R9.1"
+   ]
+  },
+  "M2": {
+   "class": "Default",
+   "pins": [
+    "J1.4",
+    "R10.1"
+   ]
+  },
+  "M3": {
+   "class": "Default",
+   "pins": [
+    "J1.5",
+    "R11.1"
+   ]
+  },
+  "M4": {
+   "class": "Default",
+   "pins": [
+    "J1.6",
+    "R12.1"
+   ]
+  },
+  "ESC_CURR": {
+   "class": "Default",
+   "pins": [
+    "J1.7",
+    "R13.1"
+   ]
+  },
+  "ESC_TLM": {
+   "class": "Default",
+   "pins": [
+    "J1.8",
+    "R17.1"
+   ]
+  },
+  "+5V": {
+   "class": "Power",
+   "pins": [
+    "J2.1",
+    "D1.K",
+    "D2.K",
+    "C6.1",
+    "U3.VIN",
+    "C7.1"
+   ]
+  },
+  "CRSF_IN": {
+   "class": "Default",
+   "pins": [
+    "J2.3",
+    "R1.1"
+   ]
+  },
+  "CRSF_OUT": {
+   "class": "Default",
+   "pins": [
+    "J2.4",
+    "R2.1"
+   ]
+  },
+  "VBUS": {
+   "class": "Power",
+   "pins": [
+    "J3.VBUS",
+    "D2.A"
+   ]
+  },
+  "CC1": {
+   "class": "Default",
+   "pins": [
+    "J3.CC1",
+    "R3.1"
+   ]
+  },
+  "CC2": {
+   "class": "Default",
+   "pins": [
+    "J3.CC2",
+    "R4.1"
+   ]
+  },
+  "USB_DP": {
+   "class": "Default",
+   "pins": [
+    "J3.DP1",
+    "J3.DP2",
+    "U1.PA12"
+   ]
+  },
+  "USB_DM": {
+   "class": "Default",
+   "pins": [
+    "J3.DN1",
+    "J3.DN2",
+    "U1.PA11"
+   ]
+  },
+  "BUCK_VCC": {
+   "class": "Default",
+   "pins": [
+    "U2.VCC",
+    "U2.RT",
+    "C4.1"
+   ]
+  },
+  "BUCK_SW": {
+   "class": "Power",
+   "pins": [
+    "U2.SW",
+    "L1.1",
+    "C3.2"
+   ]
+  },
+  "BUCK_BOOT": {
+   "class": "Default",
+   "pins": [
+    "U2.BOOT",
+    "C3.1"
+   ]
+  },
+  "V5_BUCK": {
+   "class": "Power",
+   "pins": [
+    "L1.2",
+    "C5.1",
+    "R5.1",
+    "D1.A"
+   ]
+  },
+  "BUCK_FB": {
+   "class": "Default",
+   "pins": [
+    "U2.FB",
+    "R5.2",
+    "R6.1"
+   ]
+  },
+  "3V3": {
+   "class": "Power",
+   "pins": [
+    "U3.VOUT",
+    "C8.1",
+    "C9.1",
+    "U1.VDD",
+    "U1.VDDA",
+    "C10.1",
+    "C11.1",
+    "C13.1",
+    "C14.1",
+    "C15.1",
+    "U4.VDD",
+    "U4.VDDIO",
+    "U5.VCC",
+    "U5.WP",
+    "U5.HOLD",
+    "C19.1",
+    "C20.1",
+    "C21.1",
+    "R18.2",
+    "R19.2",
+    "TP1.1"
+   ]
+  },
+  "NRST": {
+   "class": "Default",
+   "pins": [
+    "U1.PG10",
+    "C16.1",
+    "TP5.1"
+   ]
+  },
+  "BOOT0": {
+   "class": "Default",
+   "pins": [
+    "U1.PB8",
+    "R7.1",
+    "TP6.1"
+   ]
+  },
+  "LED": {
+   "class": "Default",
+   "pins": [
+    "U1.PB0",
+    "R8.1"
+   ]
+  },
+  "LED_A": {
+   "class": "Default",
+   "pins": [
+    "R8.2",
+    "D3.A"
+   ]
+  },
+  "SWDIO": {
+   "class": "Default",
+   "pins": [
+    "U1.PA13",
+    "TP3.1"
+   ]
+  },
+  "SWCLK": {
+   "class": "Default",
+   "pins": [
+    "U1.PA14",
+    "TP4.1"
+   ]
+  },
+  "CRSF_RX": {
+   "class": "Default",
+   "pins": [
+    "R1.2",
+    "U1.PA9"
+   ]
+  },
+  "CRSF_TX": {
+   "class": "Default",
+   "pins": [
+    "R2.2",
+    "U1.PA10"
+   ]
+  },
+  "DSHOT1": {
+   "class": "Default",
+   "pins": [
+    "R9.2",
+    "U1.PA0"
+   ]
+  },
+  "DSHOT2": {
+   "class": "Default",
+   "pins": [
+    "R10.2",
+    "U1.PA1"
+   ]
+  },
+  "DSHOT3": {
+   "class": "Default",
+   "pins": [
+    "R11.2",
+    "U1.PA2"
+   ]
+  },
+  "DSHOT4": {
+   "class": "Default",
+   "pins": [
+    "R12.2",
+    "U1.PA3"
+   ]
+  },
+  "CURR_ADC": {
+   "class": "Default",
+   "pins": [
+    "R13.2",
+    "R14.1",
+    "C17.1",
+    "U1.PA4"
+   ]
+  },
+  "VBAT_ADC": {
+   "class": "Default",
+   "pins": [
+    "R15.2",
+    "R16.1",
+    "C18.1",
+    "U1.PF0"
+   ]
+  },
+  "TLM_RX": {
+   "class": "Default",
+   "pins": [
+    "R17.2",
+    "U1.PA15"
+   ]
+  },
+  "SPI_SCK": {
+   "class": "Default",
+   "pins": [
+    "U1.PB3",
+    "U4.SCL",
+    "U5.CLK"
+   ]
+  },
+  "SPI_MISO": {
+   "class": "Default",
+   "pins": [
+    "U1.PB4",
+    "U4.SDO",
+    "U5.DO"
+   ]
+  },
+  "SPI_MOSI": {
+   "class": "Default",
+   "pins": [
+    "U1.PB5",
+    "U4.SDA",
+    "U5.DI"
+   ]
+  },
+  "IMU_CS": {
+   "class": "Default",
+   "pins": [
+    "U1.PB6",
+    "U4.CS",
+    "R18.1"
+   ]
+  },
+  "FLASH_CS": {
+   "class": "Default",
+   "pins": [
+    "U1.PB7",
+    "U5.CS",
+    "R19.1"
+   ]
+  },
+  "IMU_INT1": {
+   "class": "Default",
+   "pins": [
+    "U1.PA8",
+    "U4.INT1"
+   ]
+  }
+ },
+ "no_connect": [
+  "J3.SBU1",
+  "J3.SBU2",
+  "U1.PA5",
+  "U1.PA6",
+  "U1.PA7",
+  "U1.PF1",
+  "U2.PGOOD",
+  "U4.INT2",
+  "U4.NC"
+ ],
+ "net_classes": {
+  "Default": {
+   "name": "Default",
+   "track_width": 0.15,
+   "clearance": 0.125,
+   "via_diameter": 0.45,
+   "via_drill": 0.2,
+   "current_a": null
+  },
+  "Power": {
+   "name": "Power",
+   "track_width": 0.4,
+   "clearance": 0.15,
+   "via_diameter": 0.45,
+   "via_drill": 0.2,
+   "current_a": 0.5
+  }
+ },
+ "assertions": [
+  {
+   "name": "Buck Vin: spike budget vs LMR36506 65 V",
+   "value": 40.0,
+   "min": 0,
+   "max": 58.5,
+   "unit": "V",
+   "ok": true
+  },
+  {
+   "name": "Buck output (RFBT 100k / RFBB 22k)",
+   "value": 5.545454545454546,
+   "min": 5.3,
+   "max": 5.8,
+   "unit": "V",
+   "ok": true
+  },
+  {
+   "name": "+5V rail after the OR diode (receiver supply)",
+   "value": 5.195454545454546,
+   "min": 4.75,
+   "max": 5.5,
+   "unit": "V",
+   "ok": true
+  },
+  {
+   "name": "+5V vs XC6206 6.0 V max input",
+   "value": 5.545454545454546,
+   "min": 0,
+   "max": 6.0,
+   "unit": "V",
+   "ok": true
+  },
+  {
+   "name": "XC6206 headroom (dropout ~0.25 V @ 100 mA)",
+   "value": 1.8954545454545464,
+   "min": 0.4,
+   "max": 3.0,
+   "unit": "V",
+   "ok": true
+  },
+  {
+   "name": "XC6206 dissipation (SOT-23 ~0.25 W)",
+   "value": 0.1516363636363637,
+   "min": 0,
+   "max": 0.25,
+   "unit": "W",
+   "ok": true
+  },
+  {
+   "name": "+5V load: receiver 0.3 A + 3V3 rail vs LMR36506 0.6 A",
+   "value": 0.38,
+   "min": 0,
+   "max": 0.6,
+   "unit": "A",
+   "ok": true
+  },
+  {
+   "name": "D1 (B5819WS, SOD-323 ~0.2 W) dissipation at the full +5V load",
+   "value": 0.13299999999999998,
+   "min": 0,
+   "max": 0.2,
+   "unit": "W",
+   "ok": true
+  },
+  {
+   "name": "Buck inductor peak (24 V in, 0.4 A load) vs Isat 0.68 A",
+   "value": 0.4969117831204608,
+   "min": 0,
+   "max": 0.6120000000000001,
+   "unit": "A",
+   "ok": true
+  },
+  {
+   "name": "VBAT_ADC at full LiHV (100k/10k)",
+   "value": 2.3727272727272726,
+   "min": 0,
+   "max": 3.3,
+   "unit": "V",
+   "ok": true
+  },
+  {
+   "name": "CURR_ADC if the ESC cable is reversed (VBAT on CURR)",
+   "value": 2.3727272727272726,
+   "min": 0,
+   "max": 3.3,
+   "unit": "V",
+   "ok": true
+  },
+  {
+   "name": "ESC current signal 3.3 V -> ADC counts after /11 (12-bit)",
+   "value": 372.2727272727273,
+   "min": 300,
+   "max": 4095,
+   "unit": "counts",
+   "ok": true
+  },
+  {
+   "name": "Status LED current (Vf 1.8-2.4 V)",
+   "value": 0.0014,
+   "min": 0.0005,
+   "max": 0.005,
+   "unit": "A",
+   "ok": true
+  }
+ ],
+ "power_flags": [
+  "VBAT",
+  "GND",
+  "VBUS",
+  "V5_BUCK",
+  "+5V"
+ ]
+}

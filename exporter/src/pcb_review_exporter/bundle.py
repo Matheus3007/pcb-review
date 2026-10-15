@@ -288,7 +288,7 @@ def main(argv: list[str] | None = None) -> int:
     import argparse
 
     ap = argparse.ArgumentParser(prog="pcb-review-export", description=__doc__)
-    ap.add_argument("board_dirs", nargs="+", type=Path, help="pcb-lab boards/<name> directories (read-only)")
+    ap.add_argument("board_dirs", nargs="*", type=Path, help="pcb-lab boards/<name> directories (read-only)")
     ap.add_argument("-o", "--out", type=Path, default=Path("web/public/bundles"), help="bundles root (default: %(default)s)")
     ap.add_argument("--datasheets", choices=DATASHEET_MODES, default="bundle",
                     help="bundle = copy PDFs into the bundle (embedded viewer); link = link to LCSC only "
@@ -296,10 +296,19 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-models", action="store_true", help="skip STEP->GLB conversion (3D uses boxes)")
     ap.add_argument("--no-pinindex", action="store_true")
     ap.add_argument("--cache", type=Path, default=None)
+    ap.add_argument("--library", type=Path, metavar="PCB_LAB",
+                    help="also write <out>/library.json from this pcb-lab checkout (datasheet links, pin index and "
+                         "published GLBs for boards opened in the browser); runs after the boards")
     a = ap.parse_args(argv)
+    if not a.board_dirs and not a.library:
+        ap.error("give board directories and/or --library")
     for bd in a.board_dirs:
         build_bundle(bd, a.out, datasheets=a.datasheets, models=not a.no_models, pin_index=not a.no_pinindex,
                      cache_dir=a.cache)
+    if a.library:
+        from .library import build_library
+
+        build_library(a.library, a.out, pin_index=not a.no_pinindex, cache_dir=a.cache)
     return 0
 
 
