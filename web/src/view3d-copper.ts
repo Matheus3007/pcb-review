@@ -131,6 +131,7 @@ export function buildCopper(bundle: Bundle, thickness: number): Copper {
           polygonOffset: true, polygonOffsetFactor: isZone ? -1 : -2, polygonOffsetUnits: isZone ? -1 : -2 });
         owned.push(m);
         const mesh = new THREE.Mesh(g, m);
+        mesh.userData.layer = l.id;
         entry.normal.push(mesh);
         group.add(mesh);
       }
@@ -139,6 +140,7 @@ export function buildCopper(bundle: Bundle, thickness: number): Copper {
       xm.userData.base = xm.opacity;
       owned.push(xm);
       const xmesh = new THREE.Mesh(g, xm);
+      xmesh.userData.layer = l.id;
       xmesh.visible = false;
       xmesh.renderOrder = 2;
       entry.xray.push(xmesh);
@@ -168,6 +170,7 @@ export function buildCopper(bundle: Bundle, thickness: number): Copper {
         if (!geom) continue;
         const mesh = new THREE.Mesh(geom, mat);
         mesh.userData.inner = l.side === "inner";
+        mesh.userData.layer = l.id;
         mesh.renderOrder = 3;
         g.add(mesh);
       }

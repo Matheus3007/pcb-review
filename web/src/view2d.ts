@@ -128,6 +128,16 @@ export class View2D {
     this.draw();
   }
 
+  /** Board mm -> canvas CSS px (tests, overlays). */
+  toScreen(x: number, y: number): XY {
+    return [(this.flipped ? -x : x) * this.scale + this.tx, y * this.scale + this.ty];
+  }
+
+  /** Pan/zoom state (tests). */
+  viewState() {
+    return { scale: this.scale, tx: this.tx, ty: this.ty };
+  }
+
   private toBoard(sx: number, sy: number): XY {
     const x = (sx - this.tx) / this.scale;
     return [this.flipped ? -x : x, (sy - this.ty) / this.scale];
@@ -291,13 +301,22 @@ export class View2D {
   // ---------- interaction ----------
   hitTest(sx: number, sy: number): Hit | null {
     const [x, y] = this.toBoard(sx, sy);
+    return this.hitAt(x, y);
+  }
+
+  /**
+   * What's at board point (x, y) mm. Defaults follow the 2D view (active layer first, visible
+   * layers, 3 px slack); the 3D view passes the layer it hit and its own tolerance.
+   */
+  hitAt(x: number, y: number, opts: { active?: string; tol?: number; allLayers?: boolean } = {}): Hit | null {
     const ctx = this.ctx;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    const tol = 3 / this.scale; // 3 px slack
+    const tol = opts.tol ?? 3 / this.scale; // 3 px slack
+    const active = opts.active ?? this.active;
     // layers in "nearest first" order: active, then visible from the viewer side
     const order = [...this.b.layers].map((l) => l.id);
     if (this.flipped) order.reverse();
-    const layers = [this.active, ...order.filter((l) => l !== this.active)].filter((l) => this.visible.has(l));
+    const layers = [active, ...order.filter((l) => l !== active)].filter((l) => opts.allLayers || this.visible.has(l));
     for (const { via } of this.viaPaths) {
       if (Math.hypot(x - via.at[0], y - via.at[1]) <= via.size / 2 + tol) return { kind: "via", net: via.net, via };
     }
@@ -314,7 +333,7 @@ export class View2D {
         if (d <= tol && (!best || d < best.d)) best = { d, t: track, net };
       }
       if (best) return { kind: "track", net: best.net, track: best.t };
-      if (lid === this.active && this.showZones) {
+      if (lid === active && this.showZones) {
         for (const z of g.zones) if (ctx.isPointInPath(z.path, x, y, "evenodd")) return { kind: "zone", net: z.net, layer: lid };
       }
     }
@@ -325,7 +344,7 @@ export class View2D {
     }
     // zones on other layers last
     for (const lid of layers) {
-      if (lid === this.active || !this.showZones) continue;
+      if (lid === active || !this.showZones) continue;
       for (const z of this.geom.get(lid)!.zones) if (ctx.isPointInPath(z.path, x, y, "evenodd")) return { kind: "zone", net: z.net, layer: lid };
     }
     return null;
@@ -349,8 +368,31 @@ export class View2D {
       this.zoomAt(e.offsetX, e.offsetY, k);
     }, { passive: false });
 
+    // Pointer state must never outlive the gesture: a drag left armed pans the board on plain
+    // mouse moves and swallows every later click. So: state is cleared before any callback runs,
+    // callbacks can't throw out of the handler, and a missed pointerup (button released outside
+    // the window, capture lost) is detected from e.buttons / lostpointercapture.
+    const endGesture = (id?: number) => {
+      if (id === undefined) pointers.clear();
+      else pointers.delete(id);
+      if (pointers.size < 2) pinch = null;
+      drag = null;
+    };
+    const safe = (f: () => void) => {
+      try {
+        f();
+      } catch (err) {
+        console.error("pcb-review: selection handler failed", err);
+      }
+    };
+
     c.addEventListener("pointerdown", (e) => {
-      c.setPointerCapture(e.pointerId);
+      if (e.button !== 0 && e.pointerType === "mouse") return;
+      // a mouse has one pointer: anything left in the map is stale
+      if (e.pointerType === "mouse") pointers.clear();
+      try {
+        c.setPointerCapture(e.pointerId);
+      } catch { /* pointer already gone */ }
       pointers.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
       if (pointers.size === 2) {
         const [a, bb] = [...pointers.values()];
@@ -361,6 +403,7 @@ export class View2D {
       }
     });
     c.addEventListener("pointermove", (e) => {
+      if (drag && e.pointerType === "mouse" && (e.buttons & 1) === 0) endGesture(); // missed pointerup
       if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
       if (pinch && pointers.size === 2) {
         const [a, bb] = [...pointers.values()];
@@ -380,16 +423,19 @@ export class View2D {
         }
         return;
       }
-      this.opts.onHover?.(this.hitTest(e.offsetX, e.offsetY), e.clientX, e.clientY);
+      safe(() => this.opts.onHover?.(this.hitTest(e.offsetX, e.offsetY), e.clientX, e.clientY));
     });
-    const up = (e: PointerEvent) => {
-      pointers.delete(e.pointerId);
-      if (pointers.size < 2) pinch = null;
-      if (drag && !drag.moved && e.type === "pointerup") this.opts.onSelect(this.hitTest(e.offsetX, e.offsetY));
-      drag = null;
-    };
-    c.addEventListener("pointerup", up);
-    c.addEventListener("pointercancel", up);
+    c.addEventListener("pointerup", (e) => {
+      const click = !!drag && !drag.moved && !pinch;
+      endGesture(e.pointerId);
+      if (c.hasPointerCapture?.(e.pointerId)) c.releasePointerCapture(e.pointerId);
+      if (click) safe(() => this.opts.onSelect(this.hitTest(e.offsetX, e.offsetY)));
+    });
+    c.addEventListener("pointercancel", (e) => endGesture(e.pointerId));
+    c.addEventListener("lostpointercapture", (e) => {
+      if (pointers.has(e.pointerId)) endGesture(e.pointerId);
+    });
+    window.addEventListener("blur", () => endGesture());
     c.addEventListener("pointerleave", () => this.opts.onHover?.(null, 0, 0));
     c.addEventListener("dblclick", () => this.fit());
   }

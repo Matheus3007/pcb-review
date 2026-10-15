@@ -22,6 +22,9 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import type { Bundle, Footprint, Model3D, Pad, XY } from "./types";
 import { buildCopper } from "./view3d-copper";
 
+/** What a click in the 3D view hit: a part, or a board point (mm, board coords) on a copper layer. */
+export type Pick3D = { ref: string } | { point: XY; layer: string; side: "top" | "bottom" };
+
 export interface View3D {
   dispose(): void;
   highlight(refs: string[]): void;
@@ -33,6 +36,8 @@ export interface View3D {
   setXray(on: boolean): void;
   setParts(on: boolean): void;
   setCopper(on: boolean): void;
+  /** Board point (mm, +Y down) at height z (mm, top copper = 0) -> client px (tests, overlays). */
+  project(x: number, y: number, z?: number): XY;
 }
 
 const DEG = Math.PI / 180;
@@ -167,7 +172,8 @@ function footprintMatrix(fp: Footprint, thickness: number): THREE.Matrix4 {
   return m;
 }
 
-export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string): View3D {
+export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string,
+  opts: { onPick?(hit: Pick3D | null): void } = {}): View3D {
   const thickness = bundle.thickness || 1.6;
   let disposed = false;
   let needsRender = true;
@@ -232,12 +238,16 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
     g.translate(0, 0, -thickness);
     const capMat = own(new THREE.MeshStandardMaterial({ color: COLORS.maskBottom, roughness: 0.6 }));
     const sideMat = own(new THREE.MeshStandardMaterial({ color: COLORS.edge, roughness: 0.85 }));
-    boardGroup.add(new THREE.Mesh(g, [capMat, sideMat]));
+    const body = new THREE.Mesh(g, [capMat, sideMat]);
+    body.userData.board = true;
+    boardGroup.add(body);
     boardMats.push(capMat, sideMat);
     const topG = own(new THREE.ShapeGeometry(shape, 12));
     topG.translate(0, 0, 0.002);
     const topMat = own(new THREE.MeshStandardMaterial({ color: COLORS.maskTop, roughness: 0.5, metalness: 0.0 }));
-    boardGroup.add(new THREE.Mesh(topG, topMat));
+    const top = new THREE.Mesh(topG, topMat);
+    top.userData.board = true;
+    boardGroup.add(top);
     boardMats.push(topMat);
   }
 
@@ -474,6 +484,52 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
     }
   });
 
+  // ---- picking: a click (not a drag) raycasts the scene ----
+  const raycaster = new THREE.Raycaster();
+  const layerZs = bundle.layers.map((l, i, all) => ({
+    id: l.id, z: all.length > 1 ? (-thickness * i) / (all.length - 1) : 0,
+  }));
+  const visibleChain = (o: THREE.Object3D | null): boolean => {
+    for (; o; o = o.parent) if (!o.visible) return false;
+    return true;
+  };
+  function pick(clientX: number, clientY: number): Pick3D | null {
+    const r = canvas.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
+    raycaster.setFromCamera(ndc, camera);
+    for (const hit of raycaster.intersectObjects(scene.children, true)) {
+      const o = hit.object;
+      if (!(o as THREE.Mesh).isMesh || !visibleChain(o)) continue;
+      if (xray && o.userData.board) continue; // see-through board: pick the copper behind it
+      for (let a: THREE.Object3D | null = o; a; a = a.parent) {
+        if (a.userData.ref) return { ref: a.userData.ref as string };
+      }
+      const p = hit.point;
+      // layer: the copper mesh says so; otherwise the nearest copper surface to the hit height
+      const layer = (o.userData.layer as string | undefined)
+        ?? layerZs.reduce((best, l) => (Math.abs(l.z - p.z) < Math.abs(best.z - p.z) ? l : best)).id;
+      const side = p.z < -thickness / 2 ? "bottom" : "top";
+      return { point: [p.x, -p.y], layer, side };
+    }
+    return null;
+  }
+  let down: { x: number; y: number; t: number } | null = null;
+  canvas.addEventListener("pointerdown", (e) => {
+    down = e.button === 0 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null;
+  });
+  canvas.addEventListener("pointerup", (e) => {
+    const d = down;
+    down = null;
+    if (!d || !opts.onPick) return;
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 5 || performance.now() - d.t > 700) return; // orbit/pan
+    try {
+      opts.onPick(pick(e.clientX, e.clientY));
+    } catch (err) {
+      console.error("pcb-review: 3D pick failed", err);
+    }
+  });
+  canvas.addEventListener("pointercancel", () => (down = null));
+
   let xray = false;
   let partsOn = true;
   function applyParts() {
@@ -530,6 +586,11 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string)
     setCopper(on: boolean) {
       copper.setVisible(on);
       needsRender = true;
+    },
+    project(x: number, y: number, z = 0): XY {
+      const v = new THREE.Vector3(x, -y, z).project(camera);
+      const r = canvas.getBoundingClientRect();
+      return [r.left + ((v.x + 1) / 2) * r.width, r.top + ((1 - v.y) / 2) * r.height];
     },
     /** Camera presets. */
     view(kind: "iso" | "top" | "bottom") {

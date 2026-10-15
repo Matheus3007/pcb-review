@@ -53,6 +53,8 @@ async function boot() {
   setup();
   readHash();
   apply();
+  // hook for the e2e tests (web/e2e): read-only access to the live objects
+  (window as unknown as { pcbReview: unknown }).pcbReview = { bundle, state, view2d, get view3d() { return view3d; } };
 }
 
 function picker(boards: { name: string; layers: number; size_mm: number[]; generated: string }[]): string {
@@ -227,14 +229,37 @@ function apply(pushHash = true) {
   view2d.selectedRefs = new Set(state.ref ? [state.ref] : []);
   view2d.resize();
   if (state.tab === "3d") ensure3d();
-  view3d?.highlight(refsOnSelection());
-  view3d?.setNet(state.net);
+  guard("3D highlight", () => {
+    view3d?.highlight(refsOnSelection());
+    view3d?.setNet(state.net);
+  });
   if (state.tab === "3d") view3d?.resize();
   for (const tr of document.querySelectorAll<HTMLElement>("#pane-bom tr[data-refs]")) {
     tr.classList.toggle("sel", !!state.ref && tr.dataset.refs!.split(",").includes(state.ref));
   }
-  renderSide();
+  // a failing pane must not take selection down with it
+  guard("side pane", renderSide);
   if (pushHash) writeHash();
+}
+
+function guard(what: string, f: () => void) {
+  try {
+    f();
+  } catch (err) {
+    console.error(`pcb-review: ${what} failed`, err);
+  }
+}
+
+/** 3D pick -> the same Hit the 2D view would produce, so both views select identically. */
+function hitFrom3d(p: import("./view3d").Pick3D | null): Hit | null {
+  if (!p) return null;
+  if ("ref" in p) {
+    const fp = fpByRef.get(p.ref);
+    return fp ? { kind: "footprint", net: "", fp } : null;
+  }
+  // a 3D click is coarser than a 2D one: 0.2 mm slack, every layer considered, hit layer first
+  const hit = view2d.hitAt(p.point[0], p.point[1], { active: p.layer, tol: 0.2, allLayers: true });
+  return hit;
 }
 
 function refsOnSelection(): string[] {
@@ -281,7 +306,7 @@ async function ensure3d() {
         <label class="toggle"><input type="checkbox" data-t3="copper" checked> Copper</label>
         <label class="toggle" title="Translucent board, all copper layers in their 2D colours (key x)"><input type="checkbox" data-t3="xray"> X-ray</label>
       </div>`;
-    view3d = mod.mountView3D(host, bundle, base);
+    view3d = mod.mountView3D(host, bundle, base, { onPick: (hit) => selectHit(hitFrom3d(hit)) });
     const bar = host.querySelector(".view3d-bar")!;
     bar.addEventListener("click", (e) => {
       const v = (e.target as HTMLElement).closest<HTMLElement>("[data-view]")?.dataset.view;
@@ -431,6 +456,7 @@ function showDatasheet() {
   if (!fp || !ds) {
     host.classList.remove("on");
     host.innerHTML = "";
+    delete host.dataset.mode; // the viewer is gone: rebuild it next time (this was the wedge bug)
     pdf = null;
     return;
   }
@@ -443,7 +469,7 @@ function showDatasheet() {
 
   // (re)build the frame when switching between the pdf.js viewer and the iframe
   const mode = ds.file ? "pdfjs" : "iframe";
-  if (host.dataset.mode !== mode) {
+  if (host.dataset.mode !== mode || !host.querySelector(".pdf-head")) {
     host.dataset.mode = mode;
     host.innerHTML = `<div class="pdf-head"></div>` + (mode === "iframe" ? `<div class="pdf-frame"></div>` : "");
     pdf = mode === "pdfjs" ? new PdfView(host) : null;

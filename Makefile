@@ -6,11 +6,11 @@ PORT ?= 5173
 export UV_LINK_MODE = copy
 UV = uv run --project exporter
 
-.PHONY: help bundle release-bundle dev build test shots clean
+.PHONY: help bundle release-bundle dev build test e2e shots clean
 help:
 	@echo "make bundle BOARD=x [DATASHEETS=bundle|link|none]  export a board for local dev (web/public/bundles, untracked)"
 	@echo "make release-bundle BOARD=x [DATASHEETS=link]      export into bundles/ (committed, deployed to GitHub Pages)"
-	@echo "make dev | build | test | shots"
+	@echo "make dev | build | test | e2e | shots"
 
 bundle:
 	$(UV) pcb-review-export $(PCB_LAB)/boards/$(BOARD) -o web/public/bundles --datasheets $(DATASHEETS) $(ARGS)
@@ -28,6 +28,10 @@ build:
 test:
 	cd exporter && uv run pytest -q
 	cd web && npx tsc --noEmit
+
+# Browser tests (Playwright) against the production build + bundles/, as deployed
+e2e:
+	cd web && npx playwright test --reporter=line
 
 # Screenshots of the main views against a running `make dev` (needs chromium deps, see CLAUDE.md)
 shots:

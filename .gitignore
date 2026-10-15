@@ -8,3 +8,5 @@ __pycache__/
 out/
 screenshots/*.tmp.png
 web/public/bundles-link/
+web/test-results/
+web/playwright-report/

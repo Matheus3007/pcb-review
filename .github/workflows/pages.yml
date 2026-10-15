@@ -26,6 +26,11 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci
         working-directory: web
+      - name: Browser tests (selection, 3D picking)
+        working-directory: web
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test --reporter=line
       - run: npm run build
         working-directory: web
       - name: Add bundles and CNAME
