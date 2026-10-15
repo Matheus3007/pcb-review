@@ -5,7 +5,7 @@ A static web app (no server) for reviewing the PCBs that pcb-lab generates, with
 ## Hard rules
 
 - **pcb-lab (`/mnt/c/Users/mathe/pcb-lab`) is read-only.** Another session works there. Never write, `make`, or commit in it. The exporter only reads `boards/<b>/build/**`, `board.yaml`, `lib/{datasheets,3d}`, and `lib/jlc_cache.json` (datasheet URLs for link mode).
-- **No publishing.** Don't create GitHub repos, push, deploy, or touch DNS; those are the owner's calls. The deploy workflow and DNS steps are prepared in README.md.
+- **Pushing `main` deploys the public site.** The repo is github.com/Matheus3007/pcb-review (public) and GitHub Pages serves https://review.spinup.fail (repo variable `PAGES_CNAME`). Commit locally as you go, but push only when the owner or manager asks. Never touch DNS (Porkbun; the owner's). A public board needs `make release-bundle BOARD=x` and a commit of `bundles/x/`.
 - **Datasheets on the public site come from LCSC, never re-hosted** (the owner's decision, 2026-10-14). `make release-bundle` uses `--datasheets link`: iframe of LCSC's raw PDF at `#page=N` (no CORS, so not pdf.js). EasyEDA 3D models are hosted (the current default; the owner hasn't ruled on it).
 - `web/src/types.ts` is the bundle contract. When you change it, change the exporter and docs/bundle-format.md in the same commit.
 

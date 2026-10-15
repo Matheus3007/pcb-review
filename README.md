@@ -21,9 +21,9 @@ Setup, once: `cd web && npm install`. The exporter's Python environment is creat
 
 Keys in the copper view: `1`..`4` set the active layer, `b` toggles the bottom view, `f` fits the board, `Esc` clears the selection.
 
-## Hosting (prepared, not published)
+## Hosting
 
-The target is a subdomain such as `review.spinup.fail` on GitHub Pages. The blog stays in `Matheus3007/spinup-fail`; this would be its own repo.
+Live at **https://review.spinup.fail**, served by GitHub Pages from this repo (`Matheus3007/pcb-review`). It goes live once the DNS record in step 4 exists. The blog stays in `Matheus3007/spinup-fail`. Every push to `main` redeploys. These were the setup steps; 2–4 are done except the DNS record:
 
 1. **What gets public.** `make release-bundle BOARD=x` exports into `bundles/` with `--datasheets link`, so no PDFs are hosted. The side pane shows LCSC's own copy of the PDF in the browser's PDF viewer, opened at the pin's page (e.g. p.56 for PA9). Pin highlighting is only available with bundled PDFs (`DATASHEETS=bundle`, as in local dev). The 3D models (KiCad's library, plus EasyEDA models for the USB-C and LMR36506) are converted and hosted. For box-only 3D, add `ARGS=--no-models`.
 2. Commit `bundles/<board>/` and push to `main` in a new GitHub repo, e.g. `Matheus3007/pcb-review`.
