@@ -25,7 +25,7 @@ test("open a board folder from disk", async ({ page }) => {
   const errors = collectErrors(page);
   await stubDatasheets(page);
   await ready(page);
-  await page.getByRole("button", { name: "Open…" }).click();
+  await page.getByRole("button", { name: "⬆ Upload board" }).click();
   await expect(page.locator("#open-dialog")).toBeVisible();
   await page.locator("#open-folder").setInputFiles(BOARD);
   await checkOpened(page);
@@ -48,7 +48,7 @@ test("open a .zip of the board", async ({ page }) => {
   };
   walk(BOARD);
   files["rebot-ctrl-v2/build/renders/top.png"] = new Uint8Array(1000); // ignored noise
-  await page.getByRole("button", { name: "Open…" }).click();
+  await page.getByRole("button", { name: "⬆ Upload board" }).click();
   await page.locator("#open-zip").setInputFiles({ name: "rebot-ctrl-v2.zip", mimeType: "application/zip", buffer: Buffer.from(zipSync(files)) });
   await checkOpened(page);
   expect(errors).toEqual([]);
@@ -56,7 +56,7 @@ test("open a .zip of the board", async ({ page }) => {
 
 test("a folder without a board says so", async ({ page }) => {
   await ready(page);
-  await page.getByRole("button", { name: "Open…" }).click();
+  await page.getByRole("button", { name: "⬆ Upload board" }).click();
   await page.locator("#open-zip").setInputFiles({ name: "x.zip", mimeType: "application/zip", buffer: Buffer.from(zipSync({ "readme.md": new TextEncoder().encode("hi") })) });
   await expect(page.locator("#open-dialog .open-status")).toContainText("No .kicad_pcb found");
 });

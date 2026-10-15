@@ -34,6 +34,14 @@ test("clicking a track, a part and empty space in 3D selects like 2D", async ({ 
   await page.mouse.click(sx, sy);
   await expect.poll(() => page.evaluate(() => (window as any).pcbReview.state.net)).toBe(track.net);
   await expect(page.locator("#side-info h2")).toContainText(track.net);
+  // the net's pads light up too (top face, seen from above), not just its tracks
+  const padsLit = await page.evaluate(() => {
+    let n = 0;
+    (window as any).pcbReview.view3d._debug.scene.traverse((o: any) => { if (o.userData.padFace === "top" && o.visible) n += o.geometry.attributes.position.count; });
+    return n;
+  });
+  expect(padsLit).toBeGreaterThan(0);
+  await page.screenshot({ path: "test-results/pick3d-net.png" });
 
   [sx, sy] = await at(u1.x, u1.y, 0.6); // top of the QFN body
   await page.mouse.click(sx, sy);

@@ -113,14 +113,14 @@ function bindOpeners() {
   dlg.className = "open-dialog";
   dlg.innerHTML = `
     <form method="dialog"><button class="ghost close" aria-label="Close">✕</button></form>
-    <h2>Open a pcb-lab board</h2>
+    <h2>Upload a pcb-lab board</h2>
     <div class="dropzone" tabindex="0">
       <p><b>Drop</b> a board folder (<code>boards/&lt;name&gt;</code>), its <code>build/</code> folder, or a <code>.zip</code> of either.</p>
       <p class="buttons"><label class="btn">Choose folder…<input type="file" id="open-folder" webkitdirectory multiple hidden></label>
       <label class="btn">Choose .zip…<input type="file" id="open-zip" accept=".zip,application/zip" hidden></label></p>
     </div>
     <p class="open-status muted small"></p>
-    <p class="muted small">Read in your browser: nothing is uploaded. Uses <code>build/fab/*.kicad_pcb</code>, plus <code>build/work/netlist.json</code> (pin names), the BOM, <code>build/reports/</code> and <code>board.yaml</code> when present. Datasheets open from LCSC for parts in pcb-lab's library.</p>`;
+    <p class="muted small">It is read in your browser and only shown in this tab: nothing is sent to a server or published. Uses <code>build/fab/*.kicad_pcb</code>, plus <code>build/work/netlist.json</code> (pin names), the BOM, <code>build/reports/</code> and <code>board.yaml</code> when present. Datasheets open from LCSC for parts in pcb-lab's library.</p>`;
   document.body.appendChild(dlg);
   dlg.querySelector<HTMLInputElement>("#open-folder")!.addEventListener("change", (e) => {
     const files = (e.target as HTMLInputElement).files;
@@ -171,7 +171,7 @@ function banner(html: string, warnings: string[]) {
 }
 
 function picker(boards: { name: string; layers: number; size_mm: number[]; generated: string }[]): string {
-  const open = `<p><button class="btn" data-open>Open a board from your computer…</button></p>
+  const open = `<p><button class="btn" data-open>⬆ Upload a board…</button></p>
     <p class="muted small">Any pcb-lab board: drop its folder or a .zip anywhere on this page. Nothing is uploaded.</p>`;
   if (!boards.length) return `<div class="empty"><h1>pcb-review</h1><p>No published boards.</p>${open}</div>`;
   return `<div class="empty"><h1>pcb-review</h1><ul class="board-list">${boards
@@ -190,7 +190,7 @@ function renderShell(boards: { name: string }[], localName?: string) {
       <button data-tab="bom" role="tab">BOM</button>
       <button data-tab="checks" role="tab">Checks</button>
     </nav>
-    <button class="ghost open-btn" data-open title="Open a pcb-lab board folder or .zip from your computer">Open…</button>
+    <button class="btn open-btn" data-open title="View another pcb-lab board: its folder or a .zip, read in your browser">⬆ Upload board</button>
     <div class="search"><input id="search" list="search-list" placeholder="Net or ref…" autocomplete="off" spellcheck="false"><datalist id="search-list"></datalist></div>
   </header>
   <div class="layerbar" id="layerbar"></div>
@@ -492,7 +492,8 @@ function summaryHtml(): string {
       <dt>Routing</dt><dd>${bundle.tracks.length} segments · ${bundle.vias.length} vias</dd>
       ${c ? `<dt>Checks</dt><dd><a href="#tab=checks" class="badge ${c.pass ? "ok" : "bad"}">${c.pass ? "PASS" : "FAIL"}</a> ${c.errors ?? 0} errors · ${c.warnings ?? 0} warnings · ${c.waived ?? 0} waived</dd>` : ""}
     </dl>
-    <p class="hint">Click a track, via, pad or zone to select its net. Click a part body to inspect the part. Esc clears.</p>`;
+    <p class="hint">Click a track, via, pad or zone to select its net. Click a part body to inspect the part. Esc clears.</p>
+    <p class="hint">Another board? <a href="#" data-open>Upload a pcb-lab board</a> (its folder or a .zip), or drop it anywhere on this page.</p>`;
 }
 
 function partLinks(lcsc?: string): string {

@@ -7,11 +7,11 @@
 // on top in a bright overlay, through the board in X-ray mode.
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import type { Bundle, Track, XY } from "./types";
+import type { Bundle, Pad, Track, XY } from "./types";
 import { layerColor } from "./view2d";
 
 const UNDER_MASK = { top: 0x2f7a3c, bottom: 0x2a6e37 };
-const NET_COLOR = 0xffb02e;        // normal mode: amber against the green mask
+const NET_COLOR = 0x2ee6ff;        // normal mode: cyan, apart from the gold pads and green mask
 const NET_COLOR_XRAY = 0xffffff;   // X-ray: white against the coloured layers
 const CAP_SEGS = 8;
 const XRAY_ZONE = 0.14, XRAY_TRACK = 0.85, XRAY_DIM = 0.3; // dim factor for other copper while a net is selected
@@ -21,6 +21,8 @@ export interface Copper {
   setXray(on: boolean): void;
   setVisible(on: boolean): void;
   setNet(net: string | null): void;
+  /** per frame: show the net's pads on the face the camera sees */
+  update(camera: THREE.Camera): void;
   dispose(): void;
 }
 
@@ -75,6 +77,40 @@ function pushDisc(out: number[], cx: number, cy: number, r: number, z: number, s
     const a0 = (2 * Math.PI * k) / segs, a1 = (2 * Math.PI * (k + 1)) / segs;
     out.push(cx, -cy, z, cx + r * Math.cos(a0), -(cy + r * Math.sin(a0)), z, cx + r * Math.cos(a1), -(cy + r * Math.sin(a1)), z);
   }
+}
+
+const PAD_TOP = 0.035; // view3d draws pads as COPPER_T-thick slabs on the outer faces
+
+/** Flat outline of a pad in world xy (y flipped), at height z; same shapes as view3d's pad slabs. */
+function padFlat(pad: Pad, z: number): THREE.BufferGeometry | null {
+  let shape: THREE.Shape;
+  if (pad.polygon && pad.polygon.length > 2) {
+    shape = new THREE.Shape(pad.polygon.map(([x, y]) => new THREE.Vector2(x, -y)));
+  } else {
+    const [w, h] = pad.size;
+    if (!(w > 0 && h > 0)) return null;
+    const r = pad.shape === "circle" || pad.shape === "oval" ? Math.min(w, h) / 2
+      : pad.shape === "roundrect" ? (pad.roundrect_ratio ?? 0.25) * Math.min(w, h) : 0;
+    shape = new THREE.Shape();
+    const hx = w / 2, hy = h / 2, rr = Math.min(r, hx, hy);
+    shape.moveTo(-hx + rr, -hy);
+    shape.lineTo(hx - rr, -hy);
+    if (rr) shape.absarc(hx - rr, -hy + rr, rr, -Math.PI / 2, 0, false);
+    shape.lineTo(hx, hy - rr);
+    if (rr) shape.absarc(hx - rr, hy - rr, rr, 0, Math.PI / 2, false);
+    shape.lineTo(-hx + rr, hy);
+    if (rr) shape.absarc(-hx + rr, hy - rr, rr, Math.PI / 2, Math.PI, false);
+    shape.lineTo(-hx, -hy + rr);
+    if (rr) shape.absarc(-hx + rr, -hy + rr, rr, Math.PI, Math.PI * 1.5, false);
+  }
+  const g = new THREE.ShapeGeometry(shape, 6);
+  g.deleteAttribute("uv");
+  if (!pad.polygon) {
+    g.rotateZ((pad.rot * Math.PI) / 180);
+    g.translate(pad.at[0], -pad.at[1], 0);
+  }
+  g.translate(0, 0, z);
+  return g.index ? g.toNonIndexed() : g;
 }
 
 function flatGeometry(tris: number[]): THREE.BufferGeometry | null {
@@ -154,7 +190,8 @@ export function buildCopper(bundle: Bundle, thickness: number): Copper {
   let netName: string | null = null;
   const netMat = new THREE.MeshBasicMaterial({ color: NET_COLOR, side: THREE.DoubleSide, transparent: true, opacity: 0.95 });
   const netZoneMat = new THREE.MeshBasicMaterial({ color: NET_COLOR, side: THREE.DoubleSide, transparent: true, opacity: 0.35, depthWrite: false });
-  owned.push(netMat, netZoneMat);
+  const netPadMat = new THREE.MeshBasicMaterial({ color: NET_COLOR, side: THREE.DoubleSide, depthTest: false, transparent: true, opacity: 0.95 });
+  owned.push(netMat, netZoneMat, netPadMat);
   let xray = false;
   let visible = true;
 
@@ -174,6 +211,29 @@ export function buildCopper(bundle: Bundle, thickness: number): Copper {
         mesh.renderOrder = 3;
         g.add(mesh);
       }
+    }
+    // pads on the net, on each outer face they have copper on (THT pads: both)
+    const top = bundle.layers[0]?.id, bot = bundle.layers[bundle.layers.length - 1]?.id;
+    // Drawn over the parts (no depth test) on the face the camera looks at, so pins hidden under
+    // a QFN/LGA body still show where they are; update() picks the face each frame.
+    for (const face of ["top", "bottom"] as const) {
+      const layer = face === "top" ? top : bot;
+      if (face === "bottom" && bot === top) continue;
+      const z = face === "top" ? PAD_TOP + 0.003 : -thickness - PAD_TOP - 0.003;
+      const geoms: THREE.BufferGeometry[] = [];
+      for (const fp of bundle.footprints) for (const pad of fp.pads) {
+        if (pad.net === net && pad.layers.includes(layer)) {
+          const q = padFlat(pad, z);
+          if (q) geoms.push(q);
+        }
+      }
+      if (!geoms.length) continue;
+      const merged = mergeGeometries(geoms, false);
+      for (const q of geoms) q.dispose();
+      const mesh = new THREE.Mesh(merged, netPadMat);
+      mesh.userData.padFace = face;
+      mesh.renderOrder = 4;
+      g.add(mesh);
     }
     // via barrels: a vertical line of discs is overkill; draw a thin cylinder through the board
     for (const v of bundle.vias) {
@@ -201,12 +261,14 @@ export function buildCopper(bundle: Bundle, thickness: number): Copper {
       }
     }
     netMat.color.setHex(xray ? NET_COLOR_XRAY : NET_COLOR);
+    netPadMat.color.setHex(xray ? NET_COLOR_XRAY : NET_COLOR);
     netZoneMat.color.setHex(xray ? NET_COLOR_XRAY : NET_COLOR);
     if (netGroup) {
       netGroup.visible = visible;
       for (const c of netGroup.children) {
         const mesh = c as THREE.Mesh;
         // through the board only in X-ray; otherwise inner copper stays hidden like the real board
+        if (mesh.userData.padFace) continue; // update() decides per frame
         mesh.visible = xray || !mesh.userData.inner;
         (mesh.material as THREE.Material).depthTest = !xray;
       }
@@ -215,6 +277,14 @@ export function buildCopper(bundle: Bundle, thickness: number): Copper {
 
   return {
     group,
+    update(camera: THREE.Camera) {
+      if (!netGroup) return;
+      const above = camera.position.z > -thickness / 2;
+      for (const c of netGroup.children) {
+        const f = c.userData.padFace;
+        if (f) c.visible = visible && (f === "top") === above;
+      }
+    },
     setXray(on) { xray = on; apply(); },
     setVisible(on) { visible = on; apply(); },
     setNet(net) {

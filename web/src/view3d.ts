@@ -480,6 +480,7 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string,
     if (controls.update()) needsRender = true;
     if (needsRender) {
       needsRender = false;
+      copper.update(camera);
       renderer.render(scene, camera);
     }
   });
