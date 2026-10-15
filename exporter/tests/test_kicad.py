@@ -114,14 +114,60 @@ def test_remote_datasheet_url_fallbacks(monkeypatch):
 
     cache = {"C1": {"datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_X_C1.pdf", "datasheet_file_id": "42"},
              "C2": {"datasheet": None, "datasheet_file_id": "7"}, "C3": {}}
-    monkeypatch.setattr(B, "_is_pdf", lambda url, timeout=15: "wmsc" in url)
-    assert B.remote_datasheet_url("C1", cache) == "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/X_C1.pdf"
-    assert B.remote_datasheet_url("C2", cache) is None  # JLC candidate rejected by the (fake) check
-    monkeypatch.setattr(B, "_is_pdf", lambda url, timeout=15: "wmsc" not in url)
+    # resolve_pdf follows LCSC's script redirect to the real PDF host
+    monkeypatch.setattr(B, "resolve_pdf", lambda url, **k: "https://datasheet.lcsc.com/x.pdf" if "wmsc" in url else None)
+    assert B.remote_datasheet_url("C1", cache) == "https://datasheet.lcsc.com/x.pdf"
+    assert B.remote_datasheet_url("C2", cache) is None  # JLC candidate rejected
+    monkeypatch.setattr(B, "resolve_pdf", lambda url, **k: url if "jlcpcb" in url else None)
     assert B.remote_datasheet_url("C1", cache) == B.JLC_FILE_URL.format("42")  # broken LCSC link -> JLC
-    monkeypatch.setattr(B, "_is_pdf", lambda url, timeout=15: None)  # offline: first candidate, unverified
-    assert B.remote_datasheet_url("C1", cache).startswith("https://wmsc.lcsc.com/")
+
+    def offline(url, **k):
+        raise B.Offline("no network")
+
+    monkeypatch.setattr(B, "resolve_pdf", offline)
+    assert B.remote_datasheet_url("C1", cache) is None  # unverified links are never shipped
     assert B.remote_datasheet_url("C3", cache) is None
+
+
+def test_resolve_pdf_follows_lcsc_script_redirect():
+    """Regression (2026-10-15): LCSC's PDF links started answering with
+    <script>window.top.location.href='...pdf'</script>; embedded as-is in the side pane's iframe,
+    that navigated the whole review page away. Only URLs serving PDF bytes may be returned."""
+    import http.server
+    import threading
+
+    from pcb_review_exporter.bundle import resolve_pdf
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            routes = {
+                "/stub.pdf": (b"text/html", b"<script>window.top.location.href='/real.pdf?productCode=C1'</script>"),
+                "/meta": (b"text/html", b'<meta http-equiv="refresh" content="0; url=/real.pdf">'),
+                "/real.pdf": (b"application/pdf", b"%PDF-1.7 fake"),
+                "/page.html": (b"text/html", b"<html><body>product page</body></html>"),
+                "/loop": (b"text/html", b"<script>location.replace('/loop')</script>"),
+            }
+            ctype, body = routes.get(self.path.split("?")[0], (b"text/plain", b"nope"))
+            self.send_response(200 if self.path.split("?")[0] in routes else 404)
+            self.send_header("Content-Type", ctype.decode())
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *a):
+            pass
+
+    srv = http.server.HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{srv.server_address[1]}"
+    try:
+        assert resolve_pdf(base + "/stub.pdf") == base + "/real.pdf?productCode=C1"
+        assert resolve_pdf(base + "/meta") == base + "/real.pdf"
+        assert resolve_pdf(base + "/real.pdf") == base + "/real.pdf"
+        assert resolve_pdf(base + "/page.html") is None  # HTML without redirect: never embeddable
+        assert resolve_pdf(base + "/loop") is None       # redirect loops give up
+        assert resolve_pdf(base + "/missing.pdf") is None
+    finally:
+        srv.shutdown()
 
 
 def test_portable_source(tmp_path):

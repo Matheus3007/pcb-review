@@ -630,8 +630,17 @@ function frameTo(host: HTMLElement, url: string, page: number) {
   const want = `${url}#page=${page}&zoom=page-width&pagemode=none`;
   if (box.dataset.src === want) return;
   box.dataset.src = want;
-  box.innerHTML = `<iframe title="Datasheet" src="${esc(want)}" referrerpolicy="no-referrer"></iframe>`;
+  // The frame must never be able to navigate or pop up this page (LCSC's links once served a
+  // `window.top.location = …` stub, 2026-10-15). Firefox renders PDFs in a sandboxed iframe, so
+  // there the sandbox (no allow-top-navigation / allow-popups) enforces it. Chrome refuses to
+  // render PDFs in sandboxed frames, but it already blocks cross-origin frames from navigating
+  // the top page without a gesture in that frame; the exporter only ships URLs serving PDF bytes.
+  const sandbox = SANDBOX_PDF_OK ? ` sandbox="allow-scripts allow-same-origin allow-downloads"` : "";
+  box.innerHTML = `<iframe title="Datasheet" src="${esc(want)}" referrerpolicy="no-referrer"${sandbox}></iframe>`;
 }
+
+/** Gecko's PDF viewer works inside sandboxed iframes; Chromium's (and WebKit's) don't. */
+const SANDBOX_PDF_OK = typeof CSS !== "undefined" && CSS.supports("-moz-appearance", "none");
 
 function dsOf(fp: Footprint): { file?: string; url?: string } | undefined {
   const d = fp.lcsc ? bundle.parts[fp.lcsc]?.datasheet : undefined;

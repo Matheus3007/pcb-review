@@ -8,8 +8,9 @@ const [url, out, acts = "[]"] = process.argv.slice(2);
 // BROWSER=firefox: its built-in PDF viewer renders iframe'd PDFs (chromium-headless-shell has none).
 // Firefox brings its own (newer) NSS: its dir must come before LIBS.
 const ff = process.env.BROWSER === "firefox";
-const ffDir = ff ? (await import("node:fs")).readdirSync(`${os.homedir()}/.cache/ms-playwright`).filter((d) => d.startsWith("firefox-")).sort().pop() : "";
-const libPath = [ff ? `${os.homedir()}/.cache/ms-playwright/${ffDir}/firefox` : "", LIBS, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":");
+// Firefox's NSS also fixes Chromium here (the system one is too old: crashes on HTTPS)
+const ffDir = (await import("node:fs")).readdirSync(`${os.homedir()}/.cache/ms-playwright`).filter((d) => d.startsWith("firefox-")).sort().pop();
+const libPath = [ffDir ? `${os.homedir()}/.cache/ms-playwright/${ffDir}/firefox` : "", LIBS, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":");
 const browser = ff
   ? await firefox.launch({ env: { ...process.env, LD_LIBRARY_PATH: libPath }, firefoxUserPrefs: { "pdfjs.disabled": false } })
   : await chromium.launch({ env: { ...process.env, LD_LIBRARY_PATH: libPath }, args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });

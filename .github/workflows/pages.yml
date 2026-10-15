@@ -29,10 +29,10 @@ jobs:
       - name: Unit tests (importer parity with the Python exporter)
         working-directory: web
         run: npx tsc --noEmit && npx vitest run
-      - name: Browser tests (selection, 3D picking, opening local boards)
+      - name: Browser tests (selection, 3D picking, local boards, datasheet frame safety; Chromium + Firefox)
         working-directory: web
         run: |
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox
           npx playwright test --reporter=line
       - run: npm run build
         working-directory: web

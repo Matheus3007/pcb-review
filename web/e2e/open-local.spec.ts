@@ -18,7 +18,7 @@ async function checkOpened(page: import("@playwright/test").Page) {
   const t = (await netTargets(page)).find((x) => x.ref === "U1")!;
   await page.mouse.click(t.x, t.y);
   expect((await appState(page)).net).toBe(t.net);
-  await expect(page.locator(".pdf-frame iframe")).toHaveAttribute("src", /wmsc\.lcsc\.com.*#page=\d+/);
+  await expect(page.locator(".pdf-frame iframe")).toHaveAttribute("src", /datasheet\.lcsc\.com.*#page=\d+/);
 }
 
 test("open a board folder from disk", async ({ page }) => {

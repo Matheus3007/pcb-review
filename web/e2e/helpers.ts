@@ -3,7 +3,7 @@ import type { Page } from "@playwright/test";
 /** Remote datasheets (LCSC/JLC) are stubbed: offline, deterministic, and chromium-headless-shell
  *  crashes on real cross-origin PDF iframes. */
 export async function stubDatasheets(page: Page) {
-  await page.route(/wmsc\.lcsc\.com|jlcpcb\.com\/api\/file/, (r) =>
+  await page.route(/wmsc\.lcsc\.com|datasheet\.lcsc\.com|jlcpcb\.com\/api\/file/, (r) =>
     r.fulfill({ contentType: "text/html", body: "<p>datasheet stub</p>" }));
 }
 

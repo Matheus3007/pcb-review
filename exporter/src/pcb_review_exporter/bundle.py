@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import datetime as dt
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -43,28 +44,54 @@ LCSC_VIEWER_PREFIX = "https://www.lcsc.com/datasheet/lcsc_datasheet_"
 LCSC_PDF_PREFIX = "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/"
 
 
-def _is_pdf(url: str, timeout: float = 15) -> bool | None:
-    """True/False if the URL serves a PDF, None if the network is unavailable."""
+class Offline(Exception):
+    pass
+
+
+_REDIRECT = re.compile(
+    r"""(?:location(?:\.href)?\s*=\s*|location\.replace\(\s*)['"]([^'"]+)['"]|http-equiv=["']?refresh["']?[^>]*url=([^"'>\s]+)""",
+    re.I)
+
+
+def resolve_pdf(url: str, timeout: float = 15, hops: int = 3) -> str | None:
+    """The URL that serves the PDF bytes themselves, or None.
+
+    The web app embeds this URL in an iframe, so it must never be an HTML page: since 2026-10-15
+    LCSC's wmsc.lcsc.com links answer with `<script>window.top.location.href='…pdf'</script>`,
+    which inside an iframe tries to navigate the whole review page away (Firefox asks to allow
+    it as a popup). Script/meta redirects are followed here, at export time, instead.
+    Raises Offline when the network is unavailable.
+    """
     import urllib.error
     import urllib.request
+    from urllib.parse import urljoin
 
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Range": "bytes=0-1023"})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            return r.read(5) == b"%PDF-"
-    except urllib.error.HTTPError:
-        return False
-    except (urllib.error.URLError, TimeoutError, OSError):
-        return None
+    for _ in range(hops + 1):
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Range": "bytes=0-4095"})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                final, head = r.geturl(), r.read(4096)
+        except urllib.error.HTTPError:
+            return None
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            raise Offline(str(e)) from e
+        if head.startswith(b"%PDF-"):
+            return final
+        m = _REDIRECT.search(head.decode("latin-1"))
+        if not m:
+            return None
+        url = urljoin(final, m.group(1) or m.group(2))
+    return None
 
 
 def remote_datasheet_url(lcsc: str, jlc_cache: dict, check: bool = True) -> str | None:
     """A direct PDF URL that a browser can show inline (iframe), for link mode.
 
-    LCSC's own datasheet links are an HTML viewer that refuses framing (X-Frame-Options); the
-    same file is served raw from wmsc.lcsc.com. Fallback: JLC's file endpoint (pcb-lab's source
-    for lib/datasheets, so page numbers match). Neither sends CORS headers, so pdf.js can't load
-    them cross-origin: the web app embeds them in an iframe instead.
+    Candidates: LCSC's raw host (the www.lcsc.com/datasheet link is an HTML viewer that refuses
+    framing), then JLC's file endpoint (pcb-lab's source for lib/datasheets, so page numbers
+    match). Each is resolved to the URL that serves the PDF bytes (see resolve_pdf). None of these
+    hosts sends usable CORS headers, so pdf.js can't load them: the web app uses an iframe.
+    With check=False the first candidate is returned unverified (tests only).
     """
     info = jlc_cache.get(lcsc) or {}
     cands = []
@@ -72,10 +99,15 @@ def remote_datasheet_url(lcsc: str, jlc_cache: dict, check: bool = True) -> str 
         cands.append(info["datasheet"].replace(LCSC_VIEWER_PREFIX, LCSC_PDF_PREFIX))
     if info.get("datasheet_file_id"):
         cands.append(JLC_FILE_URL.format(info["datasheet_file_id"]))
+    if not check:
+        return cands[0] if cands else None
     for url in cands:
-        ok = _is_pdf(url) if check else True
-        if ok or ok is None:  # offline: keep the first candidate unverified
-            return url
+        try:
+            pdf = resolve_pdf(url)
+        except Offline:
+            return None  # never ship an unverified link: it could be an HTML page
+        if pdf:
+            return pdf
     return None
 
 
