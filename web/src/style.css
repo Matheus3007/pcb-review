@@ -261,3 +261,6 @@ table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
 }
 .banner span { flex: 1; }
 .banner ul { margin: 0; padding-left: 18px; color: var(--muted); flex: 2; }
+
+.gh { display: inline-flex; align-items: center; color: var(--muted); margin-left: 4px; }
+.gh:hover { color: var(--text); }

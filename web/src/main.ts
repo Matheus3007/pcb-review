@@ -191,6 +191,7 @@ function renderShell(boards: { name: string }[], localName?: string) {
       <button data-tab="checks" role="tab">Checks</button>
     </nav>
     <button class="btn open-btn" data-open title="View another pcb-lab board: its folder or a .zip, read in your browser">⬆ Upload board</button>
+    <a class="gh" href="https://github.com/Matheus3007/pcb-review" target="_blank" rel="noopener" title="Source on GitHub" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
     <div class="search"><input id="search" list="search-list" placeholder="Net or ref…" autocomplete="off" spellcheck="false"><datalist id="search-list"></datalist></div>
   </header>
   <div class="layerbar" id="layerbar"></div>
@@ -493,7 +494,8 @@ function summaryHtml(): string {
       ${c ? `<dt>Checks</dt><dd><a href="#tab=checks" class="badge ${c.pass ? "ok" : "bad"}">${c.pass ? "PASS" : "FAIL"}</a> ${c.errors ?? 0} errors · ${c.warnings ?? 0} warnings · ${c.waived ?? 0} waived</dd>` : ""}
     </dl>
     <p class="hint">Click a track, via, pad or zone to select its net. Click a part body to inspect the part. Esc clears.</p>
-    <p class="hint">Another board? <a href="#" data-open>Upload a pcb-lab board</a> (its folder or a .zip), or drop it anywhere on this page.</p>`;
+    <p class="hint">Another board? <a href="#" data-open>Upload a pcb-lab board</a> (its folder or a .zip), or drop it anywhere on this page.</p>
+    <p class="hint">Boards are designed as code in <a href="https://github.com/Matheus3007/pcb-lab" target="_blank" rel="noopener">pcb-lab</a> · viewer source: <a href="https://github.com/Matheus3007/pcb-review" target="_blank" rel="noopener">pcb-review</a></p>`;
 }
 
 function partLinks(lcsc?: string): string {
