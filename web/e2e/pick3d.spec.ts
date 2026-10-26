@@ -30,6 +30,9 @@ test("clicking a track, a part and empty space in 3D selects like 2D", async ({ 
 
   const at = (x: number, y: number, z: number) => page.evaluate(([x, y, z]) => ((window as any).pcbReview.view3d as V3).project(x, y, z), [x, y, z]);
 
+  // parts hidden for the track click: models stream in on (slow, software) WebGL and one landing on
+  // the click point would turn it into a part pick (flaky in CI, 2026-10-26)
+  await page.locator("[data-t3=parts]").uncheck();
   let [sx, sy] = await at(track.x, track.y, 0.006);
   await page.mouse.click(sx, sy);
   await expect.poll(() => page.evaluate(() => (window as any).pcbReview.state.net)).toBe(track.net);
@@ -43,7 +46,8 @@ test("clicking a track, a part and empty space in 3D selects like 2D", async ({ 
   expect(padsLit).toBeGreaterThan(0);
   await page.screenshot({ path: "test-results/pick3d-net.png" });
 
-  [sx, sy] = await at(u1.x, u1.y, 0.6); // top of the QFN body
+  await page.locator("[data-t3=parts]").check();
+  [sx, sy] = await at(u1.x, u1.y, 0.6); // top of the QFN body (model or its box fallback)
   await page.mouse.click(sx, sy);
   await expect.poll(() => page.evaluate(() => (window as any).pcbReview.state.ref)).toBe("U1");
   await expect(page.locator("#side-info h2")).toContainText("U1");

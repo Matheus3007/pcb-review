@@ -17,6 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,11 +30,27 @@ jobs:
       - name: Unit tests (importer parity with the Python exporter)
         working-directory: web
         run: npx tsc --noEmit && npx vitest run
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('web/package-lock.json') }}
+      # The browser download once stalled for 20+ min with no output (Firefox, cdn.playwright.dev,
+      # 2026-10-26): cap each attempt and retry instead of hanging the deploy.
+      - name: Install test browsers
+        working-directory: web
+        timeout-minutes: 15
+        run: |
+          ok=0
+          for i in 1 2 3; do
+            if timeout 240 npx playwright install --with-deps chromium firefox; then ok=1; break; fi
+            echo "playwright install attempt $i failed or stalled; retrying"; sleep 10
+          done
+          [ "$ok" = 1 ]
       - name: Browser tests (selection, 3D picking, local boards, datasheet frame safety; Chromium + Firefox)
         working-directory: web
-        run: |
-          npx playwright install --with-deps chromium firefox
-          npx playwright test --reporter=line
+        timeout-minutes: 10
+        run: npx playwright test --reporter=line
       - run: npm run build
         working-directory: web
       - name: Add bundles and CNAME

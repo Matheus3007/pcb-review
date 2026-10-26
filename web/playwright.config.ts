@@ -23,7 +23,8 @@ const PORT = 5199;
 export default defineConfig({
   testDir: "e2e",
   timeout: 90_000,
-  retries: 0,
+  // CI runs WebGL in software on a shared runner: one retry absorbs timing noise, locally none
+  retries: process.env.CI ? 1 : 0,
   use: {
     baseURL: `http://localhost:${PORT}/`,
     viewport: { width: 1500, height: 900 },
