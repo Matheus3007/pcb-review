@@ -1300,8 +1300,8 @@
   {
    "ref": "C17",
    "footprint": "Capacitor_SMD:C_0402_1005Metric",
-   "value": "10nF",
-   "lcsc": "C15195",
+   "value": "100nF",
+   "lcsc": "C307331",
    "mpn": null,
    "dnp": false,
    "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
@@ -1375,8 +1375,8 @@
   {
    "ref": "C18",
    "footprint": "Capacitor_SMD:C_0402_1005Metric",
-   "value": "10nF",
-   "lcsc": "C15195",
+   "value": "100nF",
+   "lcsc": "C307331",
    "mpn": null,
    "dnp": false,
    "block": "ESC signals (DShot, current, telemetry, VBAT sense)",
@@ -1501,9 +1501,9 @@
   {
    "ref": "U5",
    "footprint": "Package_SON:WSON-8-1EP_6x5mm_P1.27mm_EP3.4x4.3mm",
-   "value": "W25Q128JV 16MB",
-   "lcsc": "C190862",
-   "mpn": "W25Q128JVPIQ",
+   "value": "GD25Q128E 16MB",
+   "lcsc": "C24733358",
+   "mpn": "GD25Q128EWIGY",
    "dnp": false,
    "block": "IMU LSM6DSV32X + 16 MB log flash (SPI1)",
    "pins": {
@@ -1547,9 +1547,9 @@
     "1": "FLASH_CS"
    },
    "meta": {
-    "lib_key": "W25Q128JVPIQ",
-    "lcsc": "C190862",
-    "value": "W25Q128JV 16MB",
+    "lib_key": "GD25Q128EWIGY",
+    "lcsc": "C24733358",
+    "value": "GD25Q128E 16MB",
     "footprint": "Package_SON:WSON-8-1EP_6x5mm_P1.27mm_EP3.4x4.3mm",
     "symbol": "Memory_Flash:W25Q128JVP",
     "symbol_aliases": {
@@ -1559,10 +1559,10 @@
      "DI": "DI/IO_{0}",
      "HOLD": "~{HOLD}/~{RESET}/IO_{3}"
     },
-    "pinout_source": "Winbond W25Q128JV datasheet p.5 fig.1b WSON 6x5 pad assignment + table 3.3; KiCad W25Q128JVP symbol agrees",
-    "pinout_verified": "2026-10-11",
-    "extended_reason": "The Basic W25Q128JVSIQ is SOIC-8 208 mil (about 8 x 5.3 mm); the WSON 6x5 saves area and weight on a ~2 g board.",
-    "notes": "2.7-3.6 V. /WP and /HOLD tied high for standard SPI. Exposed pad: GND."
+    "pinout_source": "GigaDevice GD25Q128E datasheet p.5 table 1 (SOP8/USON8/WSON8: 1 CS#, 2 SO, 3 WP#, 4 VSS, 5 SI, 6 SCLK, 7 HOLD#/RESET#, 8 VCC); p.52 ordering code W = WSON8 6x5, I = -40..85 C, G = no RESET# pin, Y = tray; p.58 package. PDF = the one JLC serves for C2982923 (GD25Q128EWIGR, same part on reel), sha256 54cb8513...9daf",
+    "pinout_verified": "2026-10-25",
+    "extended_reason": "Pin-compatible with the W25Q128JVPIQ (same symbol, same pad map) at ~$1.80 vs ~$3.05: saves ~$6 on 5 boards. No 16 MB WSON flash in Basic/Preferred.",
+    "notes": "2.7-3.6 V, JEDEC ID C8 40 18 (firmware must accept it, not only Winbond EF 40 18). EP 3.4 x 4.0 nom (land 3.4 x 4.3, the W25Q's footprint: fine), floating, tied to GND. WP#/HOLD# tied high for standard SPI. JLC has no datasheet on C24733358."
    }
   },
   {
@@ -2258,7 +2258,7 @@
    "track_width": 0.15,
    "clearance": 0.125,
    "via_diameter": 0.45,
-   "via_drill": 0.2,
+   "via_drill": 0.3,
    "current_a": null
   },
   "Power": {
@@ -2266,7 +2266,7 @@
    "track_width": 0.4,
    "clearance": 0.15,
    "via_diameter": 0.45,
-   "via_drill": 0.2,
+   "via_drill": 0.3,
    "current_a": 0.5
   }
  },

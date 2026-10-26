@@ -72,7 +72,9 @@ def test_track_and_via_nets_exist(geo):
     nets = set(geo["nets"])
     assert all(t["net"] in nets for t in geo["tracks"])
     assert all(v["net"] in nets for v in geo["vias"])
-    assert len(geo["tracks"]) == 478 and len(geo["vias"]) >= 100
+    # counts as pcb-lab's own report states them (the board gets rebuilt: no fixed numbers)
+    stats = json.loads((BOARD / "build" / "reports" / "checks.json").read_text())["stats"]
+    assert len(geo["tracks"]) == stats["tracks"] and len(geo["vias"]) == stats["vias"]
     # inner planes are filled zones
     assert {z["layer"] for z in geo["zones"]} >= {"In1.Cu", "B.Cu"}
 
@@ -170,6 +172,19 @@ def test_resolve_pdf_follows_lcsc_script_redirect():
         srv.shutdown()
 
 
+def test_board_silkscreen_art():
+    """rebot-ctrl-v2e carries the REBOT logo as filled gr_poly on B.SilkS (2026-10-26)."""
+    pcb = PCB_LAB / "boards" / "rebot-ctrl-v2e" / "build" / "fab" / "rebot-ctrl-v2e.kicad_pcb"
+    if not pcb.exists():
+        pytest.skip("rebot-ctrl-v2e not built")
+    g = parse_pcb(pcb, (100.0, 100.0))
+    (silk,) = g["silkscreen"]
+    assert (silk["layer"], silk["side"]) == ("B.SilkS", "bottom")
+    assert len(silk["polygons"]) == 10 and silk["lines"] == []
+    x0, y0, x1, y1 = g["bbox"]
+    assert all(x0 <= x <= x1 and y0 <= y <= y1 for poly in silk["polygons"] for x, y in poly)
+
+
 def test_portable_source(tmp_path):
     from pcb_review_exporter.bundle import portable_source
 
@@ -177,3 +192,46 @@ def test_portable_source(tmp_path):
     assert portable_source("${KICAD10_3DMODEL_DIR}/X.3dshapes/Y.step", lab) == "${KICAD10_3DMODEL_DIR}/X.3dshapes/Y.step"
     assert portable_source(r"C:\\Users\\mathe\\pcb-lab\\lib\\3d\\U.step", Path("/mnt/c/Users/mathe/pcb-lab")) == "lib/3d/U.step"
     assert portable_source(r"D:\\elsewhere\\Z.step", lab) == "Z.step"
+
+
+def test_lcsc_product_page_fallback_and_index_source(tmp_path, monkeypatch):
+    """A part with no usable LCSC/JLC link (GD25Q128E, 2026-10-26) gets the PDF its LCSC product page
+    links for its own productCode (not the related products' ones); the pin index is then built from
+    that PDF when it differs from pcb-lab's copy (another revision can shift pages)."""
+    import http.server
+    import threading
+
+    from pcb_review_exporter import bundle as B
+
+    page = (b'<a href="https://datasheet.lcsc.com/datasheet/pdf/aaaa.pdf?productCode=C1234">other</a>'
+            b'<a href="https://datasheet.lcsc.com/datasheet/pdf/beef01.pdf?productCode=C123">mine</a>')
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            body = page if self.path.startswith("/product-detail/") else b"%PDF-remote"
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *a):
+            pass
+
+    srv = http.server.HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{srv.server_address[1]}"
+    try:
+        monkeypatch.setattr(B, "lcsc_url", lambda lc: f"{base}/product-detail/{lc}.html")
+        assert B.lcsc_page_datasheet("C123") == "https://datasheet.lcsc.com/datasheet/pdf/beef01.pdf?productCode=C123"
+        assert B.lcsc_page_datasheet("C9") is None
+
+        local = tmp_path / "C123.pdf"
+        local.write_bytes(b"%PDF-local")
+        logs = []
+        src = B.index_source(local, f"{base}/real.pdf", tmp_path / "cache", logs.append)
+        assert src != local and src.read_bytes() == b"%PDF-remote" and logs  # differs: index LCSC's copy
+        same = tmp_path / "same.pdf"
+        same.write_bytes(b"%PDF-remote")
+        assert B.index_source(same, f"{base}/real.pdf", tmp_path / "cache", logs.append).read_bytes() == b"%PDF-remote"
+        assert B.index_source(local, None, tmp_path / "cache", logs.append) == local
+    finally:
+        srv.shutdown()

@@ -189,6 +189,8 @@ def parse_pcb(path: str | Path, origin: tuple[float, float] | None = None) -> di
     footprints = [_footprint(f, copper, P) for f in children(root, "footprint")]
     footprints.sort(key=lambda f: _ref_key(f["ref"]))
 
+    silkscreen = _board_silk(root, P)
+
     nets = sorted({t["net"] for t in tracks} | {v["net"] for v in vias} | {z["net"] for z in zones}
                   | {p["net"] for f in footprints for p in f["pads"]} - {""})
     nets = [n for n in nets if n]
@@ -205,7 +207,34 @@ def parse_pcb(path: str | Path, origin: tuple[float, float] | None = None) -> di
         "vias": vias,
         "zones": zones,
         "footprints": footprints,
+        "silkscreen": silkscreen,
     }
+
+
+SILK_LAYERS = {"F.SilkS": "top", "B.SilkS": "bottom"}
+
+
+def _board_silk(root: list, P) -> list[dict]:
+    """Board-level silkscreen art (gr_* on F/B.SilkS, e.g. a logo): filled shapes as polygons,
+    the rest as stroked polylines. Footprint silk stays in Footprint.silk. Text is not rendered."""
+    by_layer: dict[str, dict] = {}
+    for tag in ("gr_poly", "gr_rect", "gr_circle", "gr_line", "gr_arc"):
+        for g in children(root, tag):
+            layer = value(g, "layer")
+            if layer not in SILK_LAYERS:
+                continue
+            fill = child(g, "fill")
+            filled = bool(fill and (has_atom(fill, "yes") or has_atom(fill, "solid")))
+            stroke = child(g, "stroke")
+            width = (floats(stroke, "width") or floats(g, "width") or [0.15])[0]
+            entry = by_layer.setdefault(layer, {"layer": layer, "side": SILK_LAYERS[layer], "polygons": [], "lines": []})
+            for pl in _graphic_polylines(g):
+                pts = [P(*q) for q in pl]
+                if filled:
+                    entry["polygons"].append(pts)
+                if not filled or width > 0:  # an outlined filled shape also gets its stroke
+                    entry["lines"].append({"pts": pts, "width": width})
+    return [by_layer[l] for l in SILK_LAYERS if l in by_layer]
 
 
 def _area(loop) -> float:

@@ -101,14 +101,67 @@ def remote_datasheet_url(lcsc: str, jlc_cache: dict, check: bool = True) -> str 
         cands.append(JLC_FILE_URL.format(info["datasheet_file_id"]))
     if not check:
         return cands[0] if cands else None
-    for url in cands:
-        try:
+    try:
+        for url in cands:
             pdf = resolve_pdf(url)
-        except Offline:
-            return None  # never ship an unverified link: it could be an HTML page
-        if pdf:
-            return pdf
-    return None
+            if pdf:
+                return pdf
+        # last resort: the part's own PDF linked from its LCSC product page (only productCode=<lcsc>,
+        # the page also links related products' datasheets)
+        url = lcsc_page_datasheet(lcsc)
+        return resolve_pdf(url) if url else None
+    except Offline:
+        return None  # never ship an unverified link: it could be an HTML page
+
+
+def lcsc_page_datasheet(lcsc: str, timeout: float = 20) -> str | None:
+    import urllib.error
+    import urllib.request
+
+    req = urllib.request.Request(lcsc_url(lcsc), headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            html = r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError:
+        return None
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise Offline(str(e)) from e
+    m = re.search(r"https://datasheet\.lcsc\.com/datasheet/pdf/[0-9a-f]+\.pdf\?productCode=" + re.escape(lcsc) + r"(?![0-9])", html)
+    return m.group(0) if m else None
+
+
+def fetch_pdf(url: str, cache: Path, timeout: float = 60) -> Path | None:
+    """Download a datasheet once (cached by URL), to index the exact PDF the viewer will show."""
+    import hashlib
+    import urllib.request
+
+    dest = cache / "remote-pdf" / (hashlib.sha256(url.encode()).hexdigest()[:20] + ".pdf")
+    if dest.exists():
+        return dest
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            data = r.read()
+    except Exception:  # noqa: BLE001 - any failure: fall back to the local copy
+        return None
+    if not data.startswith(b"%PDF-"):
+        return None
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+    return dest
+
+
+def index_source(local: Path, url: str | None, cache: Path, log) -> Path:
+    """The PDF to build the pin index from: the remote one shown in the viewer when it differs
+    from pcb-lab's copy (another revision can shift pages), else the local copy."""
+    if not url:
+        return local
+    remote = fetch_pdf(url, cache)
+    if remote is None:
+        return local
+    if remote.read_bytes() != local.read_bytes():
+        log(f"{local.stem}: LCSC's PDF differs from pcb-lab's copy: pin pages indexed from LCSC's")
+    return remote
 
 
 def _lib_dir(board_dir: Path) -> Path:
@@ -212,7 +265,8 @@ def build_bundle(board_dir: str | Path, out_root: str | Path, *, datasheets: str
         if pin_index:
             pins = _part_pins(parts[lc]["refs"], by_ref)
             if pins:
-                pinindex[lc] = _pin_index(pdf, pins, part.get("mpn"), cache, log)
+                src = index_source(pdf, part.get("datasheet", {}).get("url"), cache, log) if datasheets == "link" and check_links else pdf
+                pinindex[lc] = _pin_index(src, pins, part.get("mpn"), cache, log)
 
     if models:
         _attach_models(geo["footprints"], out, cache, log)
@@ -229,7 +283,7 @@ def build_bundle(board_dir: str | Path, out_root: str | Path, *, datasheets: str
                    "kicad_pcb": str(files["pcb"].relative_to(board_dir.parent.parent))},
         "origin": geo["origin"],
         "thickness": float(board_yaml.get("thickness", geo["thickness"])),
-        **{k: geo[k] for k in ("bbox", "outline", "layers", "nets", "tracks", "vias", "zones", "footprints")},
+        **{k: geo[k] for k in ("bbox", "outline", "layers", "nets", "tracks", "vias", "zones", "footprints", "silkscreen")},
         "parts": parts,
         "bom": _bom(files["bom"]),
         "reports": {
@@ -316,6 +370,15 @@ def _update_index(out_root: Path, bundle: dict) -> None:
     idx_file.write_text(json.dumps(idx, indent=1))
 
 
+def set_default_board(out_root: Path, name: str) -> None:
+    idx_file = Path(out_root) / "index.json"
+    idx = _read_json(idx_file) or {"boards": []}
+    if name not in {b["name"] for b in idx["boards"]}:
+        raise SystemExit(f"--default {name}: no such board in {idx_file} (export it first)")
+    idx["default"] = name
+    idx_file.write_text(json.dumps(idx, indent=1))
+
+
 def main(argv: list[str] | None = None) -> int:
     import argparse
 
@@ -328,6 +391,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-models", action="store_true", help="skip STEP->GLB conversion (3D uses boxes)")
     ap.add_argument("--no-pinindex", action="store_true")
     ap.add_argument("--cache", type=Path, default=None)
+    ap.add_argument("--default", metavar="BOARD",
+                    help="board the site opens when no ?board= is given (written to <out>/index.json)")
     ap.add_argument("--library", type=Path, metavar="PCB_LAB",
                     help="also write <out>/library.json from this pcb-lab checkout (datasheet links, pin index and "
                          "published GLBs for boards opened in the browser); runs after the boards")
@@ -337,6 +402,8 @@ def main(argv: list[str] | None = None) -> int:
     for bd in a.board_dirs:
         build_bundle(bd, a.out, datasheets=a.datasheets, models=not a.no_models, pin_index=not a.no_pinindex,
                      cache_dir=a.cache)
+    if a.default:
+        set_default_board(a.out, a.default)
     if a.library:
         from .library import build_library
 

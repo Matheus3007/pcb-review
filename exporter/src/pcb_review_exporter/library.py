@@ -16,7 +16,7 @@ from pathlib import Path
 
 import yaml
 
-from .bundle import _pin_index, lcsc_url, jlc_url, remote_datasheet_url
+from .bundle import _pin_index, index_source, lcsc_url, jlc_url, remote_datasheet_url
 
 
 def build_library(pcb_lab: str | Path, out_root: str | Path, *, check_links: bool = True,
@@ -54,7 +54,7 @@ def build_library(pcb_lab: str | Path, out_root: str | Path, *, check_links: boo
             p["pinout_source"] = lp["pinout_source"]
         pdf = lib / "datasheets" / f"{lc}.pdf"
         if pin_index and lp.get("pins") and pdf.exists():
-            p["pinindex"] = _pin_index(pdf, lp["pins"], p.get("mpn"), cache, log)
+            p["pinindex"] = _pin_index(index_source(pdf, p.get("datasheet_url") if check_links else None, cache, log), lp["pins"], p.get("mpn"), cache, log)
         parts[lc] = p
 
     # KiCad model path -> shared GLB, for every model any pcb-lab board uses (converted once into

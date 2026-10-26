@@ -321,6 +321,38 @@ export function mountView3D(el: HTMLElement, bundle: Bundle, bundleBase: string,
     boardGroup.add(new THREE.LineSegments(g, own(new THREE.LineBasicMaterial({ color: COLORS.silk }))));
   }
 
+  const silkArtLines: number[] = [];
+  // board-level silkscreen art (logos): filled white shapes on the board faces, outside the mask
+  // and copper overlays (z 0.012 / -thickness - 0.012); stroked art as lines
+  const artGeoms: THREE.BufferGeometry[] = [];
+  for (const sl of bundle.silkscreen ?? []) {
+    const z = sl.side === "top" ? 0.012 : -thickness - 0.012;
+    for (const poly of sl.polygons) {
+      if (poly.length < 3) continue;
+      // KiCad's filled polygons are single rings (holes joined by slits): earcut handles them
+      const g = new THREE.ShapeGeometry(new THREE.Shape(poly.map(w)), 4);
+      g.translate(0, 0, z);
+      artGeoms.push(g);
+    }
+    for (const l of sl.lines)
+      for (let i = 1; i < l.pts.length; i++)
+        silkArtLines.push(l.pts[i - 1][0], -l.pts[i - 1][1], z, l.pts[i][0], -l.pts[i][1], z);
+  }
+  const artMerged = mergeAll(artGeoms);
+  if (artMerged) {
+    const m = new THREE.Mesh(own(artMerged), own(new THREE.MeshStandardMaterial({
+      color: COLORS.silk, roughness: 0.8, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4,
+    })));
+    m.userData.board = true; // picking treats it like the board surface
+    boardMats.push(m.material as THREE.MeshStandardMaterial); // translucent in X-ray, like the board
+    boardGroup.add(m);
+  }
+  if (silkArtLines.length) {
+    const g = own(new THREE.BufferGeometry());
+    g.setAttribute("position", new THREE.Float32BufferAttribute(silkArtLines, 3));
+    boardGroup.add(new THREE.LineSegments(g, own(new THREE.LineBasicMaterial({ color: COLORS.silk }))));
+  }
+
   // ---- components ----
   const fallbackMat = own(new THREE.MeshStandardMaterial({
     color: COLORS.fallback, roughness: 0.7, transparent: true, opacity: 0.75,

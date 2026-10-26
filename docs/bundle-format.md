@@ -4,7 +4,7 @@ The contract between the exporter and the web app. The TypeScript types in `web/
 
 ```
 <bundles root>/
-  index.json               {"boards": [{name, path: "<board>/board.json", generated, layers, size_mm}]}
+  index.json               {"default": "<board>", "boards": [{name, path: "<board>/board.json", generated, layers, size_mm}]}
   <board>/
     board.json             the Bundle
     pinindex.json          {lcsc: {pages, pins: {pin name: [hit]}, pads?: {pad number: [hit]}}}
@@ -13,6 +13,8 @@ The contract between the exporter and the web app. The TypeScript types in `web/
 ```
 
 `<bundles root>/library.json` (written by `--library <pcb-lab>`) serves boards opened in the browser from a local folder. It has `parts` (LCSC number → `datasheet_url`, `pinindex`, `pinout_source`, links) for pcb-lab's whole part library, and `models` (portable model path → GLB under `_models/`) for every model any pcb-lab board uses. The importer (`web/src/importer/`) must produce the same Bundle as the Python exporter; `importer.test.ts` checks this against `bundles/rebot-ctrl-v2`.
+
+`Bundle.silkscreen` (optional) holds board-level silkscreen art, i.e. `gr_*` items on F/B.SilkS such as the REBOT logo on rebot-ctrl-v2e's bottom. Each side has filled `polygons`, as single rings with holes joined by slits, and stroked `lines`. Footprint silk stays in `Footprint.silk`, and text items are not rendered. `index.json` `default` is the board the site opens without `?board=`, set with `--default` / `make release-bundle DEFAULT=x`.
 
 ## Coordinates
 

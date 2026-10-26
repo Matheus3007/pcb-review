@@ -1,6 +1,6 @@
 // .kicad_pcb -> review geometry, in the browser. Port of exporter/kicad.py: the output must match
 // it (web/src/types.ts; parity test in importer.test.ts). mm, board-relative, +Y down, CCW degrees.
-import type { Footprint, Layer, Model3D, Pad, Track, Via, XY, Zone } from "../types";
+import type { Footprint, Layer, Model3D, Pad, SilkLayer, Track, Via, XY, Zone } from "../types";
 import { child, children, floats, hasAtom, parse, value, type Node } from "./sexp";
 
 const r4 = (v: number) => Math.round(v * 1e4) / 1e4 + 0; // + 0 turns -0 into 0
@@ -135,6 +135,7 @@ export interface Geometry {
   vias: Via[];
   zones: Zone[];
   footprints: (Footprint & { lcsc?: string })[];
+  silkscreen: SilkLayer[];
 }
 
 export function parsePcb(text: string, origin?: XY): Geometry {
@@ -204,6 +205,7 @@ export function parsePcb(text: string, origin?: XY): Geometry {
     thickness: Number(value(general, "thickness") ?? 1.6),
     origin: [ox, oy],
     bbox, outline, layers, nets: [...netSet].sort(), tracks, vias, zones, footprints,
+    silkscreen: boardSilk(root, P),
   };
 }
 
@@ -217,6 +219,30 @@ function props(f: Node): Record<string, string> {
     }
   }
   return out;
+}
+
+const SILK_LAYERS = { "F.SilkS": "top", "B.SilkS": "bottom" } as const;
+
+/** Board-level silkscreen art (gr_* on F/B.SilkS). Port of kicad.py _board_silk. */
+function boardSilk(root: Node, P: (x: number, y: number) => XY): SilkLayer[] {
+  const by = new Map<string, SilkLayer>();
+  for (const tag of ["gr_poly", "gr_rect", "gr_circle", "gr_line", "gr_arc"]) {
+    for (const g of children(root, tag)) {
+      const layer = value(g, "layer") as keyof typeof SILK_LAYERS | undefined;
+      if (!layer || !(layer in SILK_LAYERS)) continue;
+      const fill = child(g, "fill");
+      const filled = !!fill && (hasAtom(fill, "yes") || hasAtom(fill, "solid"));
+      const width = (floats(child(g, "stroke"), "width")[0] ?? floats(g, "width")[0]) ?? 0.15;
+      if (!by.has(layer)) by.set(layer, { layer, side: SILK_LAYERS[layer], polygons: [], lines: [] });
+      const e = by.get(layer)!;
+      for (const pl of graphicPolylines(g)) {
+        const pts = pl.map((q) => P(q[0], q[1]));
+        if (filled) e.polygons.push(pts);
+        if (!filled || width > 0) e.lines.push({ pts, width });
+      }
+    }
+  }
+  return (Object.keys(SILK_LAYERS) as (keyof typeof SILK_LAYERS)[]).filter((l) => by.has(l)).map((l) => by.get(l)!);
 }
 
 function footprint(f: Node, copper: string[], P: (x: number, y: number) => XY): Footprint & { lcsc?: string } {

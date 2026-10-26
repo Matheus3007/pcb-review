@@ -39,6 +39,9 @@ export class View2D {
   private viaPaths: { via: Via; path: Path2D }[] = [];
   private outline = new Path2D();
   private fpPaths = new Map<string, Path2D>();
+  // board-level silkscreen art (logos), per side: filled shapes (one path each) + stroked lines
+  private silkArt = { top: { fills: [] as Path2D[], lines: [] as { path: Path2D; width: number }[] },
+    bottom: { fills: [] as Path2D[], lines: [] as { path: Path2D; width: number }[] } };
   // view state
   private scale = 20; // px per mm
   private tx = 0;
@@ -92,6 +95,19 @@ export class View2D {
       this.viaPaths.push({ via: v, path: p });
     }
     for (const poly of b.outline) polyPath(this.outline, poly);
+    for (const sl of b.silkscreen ?? []) {
+      const art = this.silkArt[sl.side];
+      for (const poly of sl.polygons) {
+        const p = new Path2D();
+        polyPath(p, poly);
+        art.fills.push(p);
+      }
+      for (const l of sl.lines) {
+        const p = new Path2D();
+        polyPath(p, l.pts, false);
+        art.lines.push({ path: p, width: l.width });
+      }
+    }
   }
 
   // ---------- view ----------
@@ -237,6 +253,20 @@ export class View2D {
 
     // footprint outlines (silk/fab of the side facing the viewer)
     const facing = this.flipped ? "bottom" : "top";
+    if (this.showSilk) {
+      // board silkscreen art of the facing side (e.g. the bottom logo in Bottom view)
+      const art = this.silkArt[facing];
+      const silk = css.getPropertyValue("--silk").trim() || "#d8dde3";
+      ctx.globalAlpha = this.selectedNet ? 0.3 : 0.85;
+      ctx.fillStyle = silk;
+      ctx.strokeStyle = silk;
+      ctx.lineCap = "round";
+      for (const p of art.fills) ctx.fill(p, "evenodd");
+      for (const l of art.lines) {
+        ctx.lineWidth = Math.max(l.width, 0.5 / this.scale);
+        ctx.stroke(l.path);
+      }
+    }
     if (this.showSilk) {
       ctx.lineWidth = Math.max(0.05, 1 / this.scale);
       for (const fp of b.footprints) {

@@ -35,7 +35,8 @@ async function boot() {
   const idx = await fetch("bundles/index.json").then((r) => (r.ok ? r.json() : { boards: [] })).catch(() => ({ boards: [] }));
   boards = idx.boards;
   const want = params.get("board");
-  const entry = boards.find((b) => b.name === want) ?? (boards.length === 1 ? boards[0] : null);
+  // ?board= wins; else the index's default board (set at export: make release-bundle DEFAULT=x)
+  const entry = boards.find((b) => b.name === want) ?? boards.find((b) => b.name === idx.default) ?? (boards.length === 1 ? boards[0] : null);
   if (!entry) {
     $("#app").innerHTML = picker(boards);
     return;
@@ -66,7 +67,9 @@ function start(b: Bundle, bundleBase: string, pi: Record<string, PinIndexPart>, 
   for (const fp of bundle.footprints) fpByRef.set(fp.ref, fp);
   renderShell(local ? [] : boards, local ? `${b.name} (local)` : undefined);
   document.title = `${bundle.name} · pcb-review`;
-  $("#board-name").textContent = local ? `${bundle.name} · local` : bundle.name;
+  // with several published boards the top bar shows a selector instead of the name
+  const nameEl = document.getElementById("board-name");
+  if (nameEl) nameEl.textContent = local ? `${bundle.name} · local` : bundle.name;
   if (local) {
     state.tab = "copper";
     state.net = state.ref = state.pin = null;
@@ -209,15 +212,9 @@ function renderShell(boards: { name: string }[], localName?: string) {
       <div class="side-pdf" id="side-pdf"></div>
     </aside>
   </main>`;
-  if (!$("#board-name")) {
-    const span = document.createElement("span");
-    span.id = "board-name";
-    span.hidden = true;
-    document.body.appendChild(span);
-  }
   const sel = document.getElementById("board-select") as HTMLSelectElement | null;
   if (sel) {
-    sel.value = new URLSearchParams(location.search).get("board") ?? boards[0]?.name ?? "";
+    sel.value = bundle?.name ?? new URLSearchParams(location.search).get("board") ?? boards[0]?.name ?? "";
     sel.addEventListener("change", () => (location.search = `?board=${encodeURIComponent(sel.value)}`));
   }
 }

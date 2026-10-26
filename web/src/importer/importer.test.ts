@@ -62,7 +62,7 @@ describe("importer", () => {
   it("matches the Python exporter's bundle", async () => {
     const { bundle: got, pinindex, warnings } = await importBoard(files, library);
     expect(warnings).toEqual([]);
-    for (const k of ["layers", "nets", "bbox", "outline", "origin", "thickness", "tracks", "vias", "zones", "bom"] as const) {
+    for (const k of ["layers", "nets", "bbox", "outline", "origin", "thickness", "tracks", "vias", "zones", "bom", "silkscreen"] as const) {
       expect(close(got[k], want[k], k)).toBeNull();
     }
     // footprints: GLB paths are relative to the bundles root here, to the board dir there

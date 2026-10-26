@@ -3,7 +3,7 @@
  "pass": true,
  "errors": 0,
  "warnings": 0,
- "waived": 41,
+ "waived": 40,
  "findings": [
   {
    "check": "circuit/assertion",
@@ -236,9 +236,14 @@
    "msg": "J2 courtyard -0.17 mm from left edge — receiver cable comes from the robot left side"
   },
   {
+   "check": "assembly/board_size",
+   "severity": "info",
+   "msg": "board 25.05x25.05 mm below standard PCBA minimum 70x70 mm: JLC adds edge rails itself (order option 'Edge Rails/Fiducials: Added by JLCPCB')"
+  },
+  {
    "check": "parts/tiers",
    "severity": "info",
-   "msg": "23 unique parts: basic 14, preferred 1, extended 8 (extended: C160407 SM08B-SRSS-TB(LF)(SN), C189895 SM04B-GHS-TB(LF)(SN), C165948 TYPE-C-31-M-12, C2870127 LMR36506RRPER, C167761 FNR3015S220MT, C529358 STM32G431KBU6, C22461202 LSM6DSV32XTR, C190862 W25Q128JVPIQ)"
+   "msg": "22 unique parts: basic 13, preferred 1, extended 8 (extended: C160407 SM08B-SRSS-TB(LF)(SN), C189895 SM04B-GHS-TB(LF)(SN), C165948 TYPE-C-31-M-12, C2870127 LMR36506RRPER, C167761 FNR3015S220MT, C529358 STM32G431KBU6, C22461202 LSM6DSV32XTR, C24733358 GD25Q128EWIGY)"
   },
   {
    "check": "current/width",
@@ -278,19 +283,25 @@
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "+5V on In2.Cu: 0.25 mm sideways step at (13.61, 10.45) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "+5V on F.Cu: 0.42 mm sideways step at (18.38, 23.90) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "+5V distribution (buck/USB -> LDO, receiver), DC with bulk caps at both ends"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "+5V on In2.Cu: 0.81 mm sideways step at (16.19, 10.28) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "+5V on In2.Cu: 0.89 mm sideways step at (8.96, 15.02) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "+5V distribution (buck/USB -> LDO, receiver), DC with bulk caps at both ends"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "3V3 on F.Cu: 0.80 mm sideways step at (3.78, 16.73) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "+5V on In2.Cu: 1.45 mm sideways step at (13.11, 15.64) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "+5V distribution (buck/USB -> LDO, receiver), DC with bulk caps at both ends"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "3V3 on F.Cu: 0.48 mm sideways step at (3.68, 16.27) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "3V3 distribution, DC and decoupled at every pin"
   },
   {
@@ -302,13 +313,7 @@
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "3V3 on F.Cu: 0.39 mm sideways step at (9.50, 19.02) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "3V3 distribution, DC and decoupled at every pin"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "3V3 on F.Cu: 0.88 mm sideways step at (9.88, 19.02) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "3V3 on F.Cu: 0.47 mm sideways step at (14.88, 15.12) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "3V3 distribution, DC and decoupled at every pin"
   },
   {
@@ -326,6 +331,30 @@
   {
    "check": "routing/jog",
    "severity": "warning",
+   "msg": "BUCK_FB on F.Cu: 0.82 mm sideways step at (17.09, 17.60) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "0.8 mm step between the feedback divider (R5/R6) and the LMR36506 FB pin; the FB run stays on the divider side, away from the SW node at L1"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "BUCK_VCC on F.Cu: 0.30 mm sideways step at (16.57, 17.99) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "buck internal regulator pin to its 1 uF cap and RT; DC"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "BUCK_VCC on F.Cu: 0.45 mm sideways step at (17.50, 16.80) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "buck internal regulator pin to its 1 uF cap and RT; DC"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "BUCK_VCC on F.Cu: 0.13 mm sideways step at (17.59, 16.71) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "buck internal regulator pin to its 1 uF cap and RT; DC"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
    "msg": "BUCK_VCC on F.Cu: 0.25 mm sideways step at (19.16, 19.52) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "buck internal regulator pin to its 1 uF cap and RT; DC"
   },
@@ -338,31 +367,31 @@
   {
    "check": "routing/jog",
    "severity": "warning",
+   "msg": "BUCK_VCC on F.Cu: 0.71 mm sideways step at (19.99, 18.00) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "buck internal regulator pin to its 1 uF cap and RT; DC"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "BUCK_VCC on F.Cu: 0.40 mm sideways step at (20.54, 18.16) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "buck internal regulator pin to its 1 uF cap and RT; DC"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "CC1 on F.Cu: 0.58 mm sideways step at (19.46, 9.56) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "USB-C CC pull-down, static"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
    "msg": "CC1 on F.Cu: 0.39 mm sideways step at (19.88, 8.76) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "USB-C CC pull-down, static"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "CC1 on F.Cu: 0.58 mm sideways step at (19.88, 9.15) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "USB-C CC pull-down, static"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
    "msg": "CRSF_IN on F.Cu: 0.89 mm sideways step at (6.51, 20.10) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "CRSF UART (420 kbaud) between the upright series resistors and the receiver connector pins"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "CRSF_OUT on F.Cu: 1.46 mm sideways step at (6.39, 21.05) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "CRSF UART (420 kbaud) between the upright series resistors and the receiver connector pins"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "CRSF_OUT on F.Cu: 0.60 mm sideways step at (6.99, 21.05) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "CRSF UART (420 kbaud) between the upright series resistors and the receiver connector pins"
   },
   {
@@ -392,79 +421,67 @@
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "SPI_MISO on F.Cu: 0.07 mm sideways step at (10.92, 13.68) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "IMU_INT1 on F.Cu: 1.04 mm sideways step at (13.61, 15.51) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "data-ready interrupt (edge once per sample, kHz): 1 mm step past the R18 pull-up at the IMU's bottom pads"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SPI_MISO on In2.Cu: 0.17 mm sideways step at (14.58, 12.48) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "step at the IMU LGA escape (0.5 mm pitch); SPI <= 10 MHz over ~20 mm with GND under it"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "SPI_MOSI on In2.Cu: 0.99 mm sideways step at (17.24, 15.57) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "SPI_MOSI on F.Cu: 0.30 mm sideways step at (13.29, 13.40) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "step under the flash on In2 (B.Cu GND below); SPI <= 10 MHz, net far shorter than the edge-rate wavelength"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "SWDIO on F.Cu: 0.97 mm sideways step at (3.53, 3.82) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "SPI_MOSI on In2.Cu: 0.78 mm sideways step at (20.78, 10.74) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "step under the flash on In2 (B.Cu GND below); SPI <= 10 MHz, net far shorter than the edge-rate wavelength"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SPI_SCK on In2.Cu: 0.31 mm sideways step at (11.09, 13.94) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "SCK detours ~3 mm round the SPI via cluster beside the IMU on In2 (B.Cu GND below, In1 above); SPI <= 10 MHz, a few mm is negligible at its edge rate"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SPI_SCK on In2.Cu: 1.18 mm sideways step at (13.32, 14.10) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "waived": "SCK detours ~3 mm round the SPI via cluster beside the IMU on In2 (B.Cu GND below, In1 above); SPI <= 10 MHz, a few mm is negligible at its edge rate"
+  },
+  {
+   "check": "routing/jog",
+   "severity": "warning",
+   "msg": "SWDIO on In2.Cu: 1.00 mm sideways step at (8.61, 9.96) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "debug-only line to its bottom test pad"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "SWDIO on F.Cu: 0.14 mm sideways step at (6.09, 18.58) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "debug-only line to its bottom test pad"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "SWDIO on In2.Cu: 0.49 mm sideways step at (1.48, 11.40) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "debug-only line to its bottom test pad"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "TLM_RX on F.Cu: 0.73 mm sideways step at (7.44, 20.28) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "TLM_RX on In2.Cu: 1.22 mm sideways step at (16.89, 7.24) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "ESC telemetry UART (115 kbaud), routed around the test-pad keepouts"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "TLM_RX on F.Cu: 0.63 mm sideways step at (9.87, 14.41) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "ESC telemetry UART (115 kbaud), routed around the test-pad keepouts"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "TLM_RX on In2.Cu: 0.30 mm sideways step at (4.22, 18.70) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "ESC telemetry UART (115 kbaud), routed around the test-pad keepouts"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "TLM_RX on In2.Cu: 0.41 mm sideways step at (4.22, 19.11) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "ESC telemetry UART (115 kbaud), routed around the test-pad keepouts"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "VBAT on F.Cu: 0.14 mm sideways step at (11.78, 22.50) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "VBAT on F.Cu: 0.10 mm sideways step at (15.98, 20.58) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "battery feed to the buck and the VBAT divider, DC (buck input caps at U2)"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "VBAT on In2.Cu: 0.12 mm sideways step at (5.18, 17.52) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "VBAT on In2.Cu: 0.39 mm sideways step at (9.90, 21.53) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "battery feed to the buck and the VBAT divider, DC (buck input caps at U2)"
   },
   {
    "check": "routing/jog",
    "severity": "warning",
-   "msg": "VBAT on In2.Cu: 0.48 mm sideways step at (8.20, 10.14) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
-   "waived": "battery feed to the buck and the VBAT divider, DC (buck input caps at U2)"
-  },
-  {
-   "check": "routing/jog",
-   "severity": "warning",
-   "msg": "VBAT on In2.Cu: 1.01 mm sideways step at (8.71, 22.05) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
+   "msg": "VBAT on In2.Cu: 0.81 mm sideways step at (14.17, 10.06) (board coords, +Y down); straighten it (REROUTE=1, placement, or a scripted track)",
    "waived": "battery feed to the buck and the VBAT divider, DC (buck input caps at U2)"
   },
   {
@@ -476,24 +493,12 @@
   {
    "check": "routing/stats",
    "severity": "info",
-   "msg": "288 bends total; per net: +5V 17, 3V3 53, BOOT0 4, BUCK_BOOT 8, BUCK_FB 4, BUCK_SW 4, BUCK_VCC 9, CC1 7, CC2 3, CRSF_IN 3, CRSF_OUT 5, CRSF_RX 1, CRSF_TX 1, CURR_ADC 2, DSHOT1 2, DSHOT2 2, DSHOT3 2, DSHOT4 2, ESC_CURR 1, ESC_TLM 1, FLASH_CS 4, GND 3, IMU_CS 6, IMU_INT1 8, LED 1, LED_A 2, M1 1, M2 1, M4 1, NRST 4, SPI_MISO 13, SPI_MOSI 8, SPI_SCK 11, SWCLK 6, SWDIO 17, TLM_RX 14, USB_DM 10, USB_DP 10, V5_BUCK 8, VBAT 22, VBAT_ADC 4, VBUS 3"
+   "msg": "304 bends total; per net: +5V 17, 3V3 44, BOOT0 4, BUCK_BOOT 8, BUCK_FB 6, BUCK_SW 6, BUCK_VCC 19, CC1 7, CC2 3, CRSF_IN 3, CRSF_OUT 3, CRSF_RX 1, CRSF_TX 1, CURR_ADC 3, DSHOT1 2, DSHOT2 2, DSHOT3 2, DSHOT4 2, ESC_CURR 1, ESC_TLM 1, FLASH_CS 4, GND 3, IMU_CS 6, IMU_INT1 7, LED 1, LED_A 2, M1 1, M2 1, M4 1, NRST 4, SPI_MISO 17, SPI_MOSI 13, SPI_SCK 14, SWCLK 10, SWDIO 13, TLM_RX 16, USB_DM 10, USB_DP 10, V5_BUCK 8, VBAT 21, VBAT_ADC 4, VBUS 3"
   },
   {
    "check": "layout/return_path",
-   "severity": "warning",
-   "msg": "CRSF_OUT: 0.49 mm of track has no GND under it on the reference layer (worst 0.25 mm on F.Cu over a gap in In1.Cu at (6.27, 21.17)); the return current detours around the gap (loop area, crosstalk)",
-   "waived": "0.49 mm total past via antipads in In1 near the receiver connector; 420 kbaud UART"
-  },
-  {
-   "check": "layout/return_path",
-   "severity": "warning",
-   "msg": "SPI_MISO: 0.30 mm of track has no GND under it on the reference layer (worst 0.30 mm on F.Cu over a gap in In1.Cu at (11.06, 13.89)); the return current detours around the gap (loop area, crosstalk)",
-   "waived": "0.30 mm (at the 0.3 mm limit) past one via antipad in In1 in the MCU-IMU channel"
-  },
-  {
-   "check": "layout/return_path",
-   "severity": "info",
-   "msg": "SPI_SCK: 0.30 mm of track has no GND under it on the reference layer (worst 0.30 mm on F.Cu over a gap in In1.Cu at (11.63, 13.09)); the return current detours around the gap (loop area, crosstalk)"
+   "severity": "ok",
+   "msg": "every signal track has unbroken GND on its reference layer"
   },
   {
    "check": "layout/finger",
@@ -519,12 +524,6 @@
    "check": "layout/pair",
    "severity": "ok",
    "msg": "USB_DP/USB_DM: lengths 34.34/38.61 mm, skew 4.27 mm (max 5.0)"
-  },
-  {
-   "check": "layout/vias",
-   "severity": "warning",
-   "msg": "SPI_SCK: 6 vias (sensitive net, max 4); each via is a reference-plane change for its return current",
-   "waived": "SCK reaches the IMU (beside the MCU) and the flash's far pin column (CLK on the side away from the MCU) on In2; 6 vias on a <=10 MHz clock with a GND plane next to every layer it uses"
   }
  ],
  "bom": [
@@ -549,26 +548,6 @@
   },
   {
    "category": "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
-   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Samsung-Electro-Mechanics-CL05B103KB5NNNC_C15195.pdf",
-   "datasheet_file_id": "8579707307011465216",
-   "description": "10nF 50V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS",
-   "fetched": "2026-10-11",
-   "lcsc": "C15195",
-   "manufacturer": "Samsung Electro-Mechanics",
-   "mpn": "CL05B103KB5NNNC",
-   "package": "0402",
-   "stock": 3555916,
-   "tier": "basic",
-   "unit_price_usd": 0.005,
-   "refs": [
-    "C17",
-    "C18"
-   ],
-   "value": "10nF",
-   "footprint": "Capacitor_SMD:C_0402_1005Metric"
-  },
-  {
-   "category": "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
    "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Samsung-Electro-Mechanics-CL05B104KB54PNC_C307331.pdf",
    "datasheet_file_id": "8554627388281098240",
    "description": "100nF 50V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS",
@@ -587,6 +566,8 @@
     "C11",
     "C15",
     "C16",
+    "C17",
+    "C18",
     "C19",
     "C20",
     "C21"
@@ -976,21 +957,21 @@
   },
   {
    "category": "NOR FLASH",
-   "datasheet": "https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Winbond-Elec-W25Q128JVPIQ_C190862.pdf",
-   "datasheet_file_id": "8588881960005472256",
-   "description": "-40℃~+85℃ 100,000 cycles 10uA 120ms@(32KB) 128Mbit 133MHz 2.7V~3.6V 20 Years Power-on reset、Hardware write protection、Software write protection、Write enable latch、Absolute write protection、Power lock protection SPI WSON-8-EP(5x6) NOR FLASH ROHS",
-   "fetched": "2026-10-11",
-   "lcsc": "C190862",
-   "manufacturer": "Winbond Elec",
-   "mpn": "W25Q128JVPIQ",
-   "package": "WSON-8-EP(5x6)",
-   "stock": 10314,
+   "datasheet": null,
+   "datasheet_file_id": "",
+   "description": "WSON8(5x6) NOR FLASH ROHS",
+   "fetched": "2026-10-25",
+   "lcsc": "C24733358",
+   "manufacturer": "GigaDevice Semicon Beijing",
+   "mpn": "GD25Q128EWIGY",
+   "package": "WSON8(5x6)",
+   "stock": 2311,
    "tier": "extended",
-   "unit_price_usd": 3.3812,
+   "unit_price_usd": 2.1258,
    "refs": [
     "U5"
    ],
-   "value": "W25Q128JV 16MB",
+   "value": "GD25Q128E 16MB",
    "footprint": "Package_SON:WSON-8-1EP_6x5mm_P1.27mm_EP3.4x4.3mm"
   }
  ],
@@ -999,9 +980,9 @@
    25.05,
    25.05
   ],
-  "tracks": 478,
-  "vias": 102,
-  "track_length": 576.91,
+  "tracks": 491,
+  "vias": 96,
+  "track_length": 591.83,
   "unrouted": 0,
   "parts": 57
  }

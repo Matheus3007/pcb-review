@@ -170,7 +170,7 @@ export async function importBoard(files: FileMap, library?: Library | null): Pro
     origin: geo.origin,
     thickness: by.thickness ?? geo.thickness,
     bbox: geo.bbox, outline: geo.outline, layers: geo.layers, nets: geo.nets,
-    tracks: geo.tracks, vias: geo.vias, zones: geo.zones, footprints: geo.footprints,
+    tracks: geo.tracks, vias: geo.vias, zones: geo.zones, footprints: geo.footprints, silkscreen: geo.silkscreen,
     parts,
     bom: loc.bom ? bomRows((await text(loc.bom))!) : [],
     reports: { checks: await json(loc.checks), drc: await json(loc.drc), summary_md: await text(loc.summary) },

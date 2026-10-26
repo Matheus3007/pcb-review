@@ -12,8 +12,10 @@ async function checkOpened(page: import("@playwright/test").Page) {
   await expect(page.locator(".banner")).toContainText("Nothing was uploaded");
   await expect(page.locator("#board-name")).toContainText("rebot-ctrl-v2 · local");
   const s = await page.evaluate(() => (window as any).pcbReview.bundle);
-  expect(s.footprints.length).toBe(57);
-  expect(s.tracks.length).toBe(478);
+  // counts from the fixture's own pcb-lab report (the fixture is regenerated as the board evolves)
+  const stats = JSON.parse(readFileSync(join(BOARD, "build/reports/checks.json"), "utf8")).stats;
+  expect(s.footprints.length).toBe(stats.parts);
+  expect(s.tracks.length).toBe(stats.tracks);
   // selection works on the imported board, datasheet from LCSC at the pin's page
   const t = (await netTargets(page)).find((x) => x.ref === "U1")!;
   await page.mouse.click(t.x, t.y);

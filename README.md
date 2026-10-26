@@ -29,6 +29,7 @@ Live at **https://review.spinup.fail**, served by GitHub Pages from this repo (`
 
 1. **What gets public.** `make release-bundle BOARD=x` exports into `bundles/` with `--datasheets link`, so no PDFs are hosted. The side pane shows LCSC's own copy of the PDF in the browser's PDF viewer, opened at the pin's page (e.g. p.56 for PA9). Pin highlighting is only available with bundled PDFs (`DATASHEETS=bundle`, as in local dev). The 3D models (KiCad's library, plus EasyEDA models for the USB-C and LMR36506) are converted and hosted. For box-only 3D, add `ARGS=--no-models`.
 2. Commit `bundles/<board>/` and push to `main` in a new GitHub repo, e.g. `Matheus3007/pcb-review`.
+   The site opens the `default` board from `bundles/index.json`; change it with `make release-bundle BOARD=x DEFAULT=x`. The others stay in the board selector.
 3. In the repo settings, go to *Pages → Source: GitHub Actions*. `.github/workflows/pages.yml` builds `web/`, adds `bundles/`, and deploys.
 4. Custom domain:
    - **GitHub:** set the repository variable `PAGES_CNAME=review.spinup.fail` (Settings → Secrets and variables → Actions → Variables). The workflow then writes `CNAME` into the site. Then set the same domain under *Pages → Custom domain* and tick *Enforce HTTPS* once the certificate is issued.

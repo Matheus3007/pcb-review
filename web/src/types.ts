@@ -19,10 +19,19 @@ export interface Bundle {
   vias: Via[];
   zones: Zone[];
   footprints: Footprint[];
+  silkscreen?: SilkLayer[];          // board-level silk art (logos...), per side; footprint silk is in Footprint.silk
   parts: Record<string, Part>;       // keyed by LCSC number (e.g. "C529358")
   bom: BomRow[];
   reports: { checks?: unknown; drc?: unknown; summary_md?: string };
   pinindex?: string;                 // relative path to pinindex.json
+}
+
+/** Board-level silkscreen on one side: filled shapes + stroked polylines (absolute, board coords). */
+export interface SilkLayer {
+  layer: "F.SilkS" | "B.SilkS";
+  side: "top" | "bottom";
+  polygons: XY[][];
+  lines: { pts: XY[]; width: number }[];
 }
 
 export interface Layer { id: string; name: string; index: number; side: "top" | "inner" | "bottom" }

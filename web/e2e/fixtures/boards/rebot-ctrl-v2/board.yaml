@@ -1,10 +1,14 @@
 # Machine-readable board config (human-facing requirements live in spec.md).
 layers: 4                   # F signal | In1 GND | In2 signal | B GND (see routing.yaml)
 thickness: 1.0
-assembly_tier: economic     # one-sided
+assembly_tier: standard     # parts one-sided; Standard because JLC sells the LSM6DSV32X (U4) for Standard PCBA only
 origin: [100.0, 100.0]
 rules:
-  hole_to_hole: 0.3      # only vias are close (the USB shell holes are far apart); JLC via hole-to-hole min 0.2, pad holes 0.45 (docs/jlcpcb.md)
+  hole_to_hole: 0.25     # only vias are close (the USB shell holes are far apart); JLC via hole-to-hole min 0.2, pad holes 0.45 (docs/jlcpcb.md)
+  # Vias are 0.3 drill / 0.45 pad: JLC's no-surcharge via option ("0.3mm/(0.4/0.45mm)"); any smaller drill added ~$51
+  # on 5 boards (4-wire Kelvin test + TG155, live quote 2026-10-25). 0.45 is JLC's preferred pad (hole + 0.15).
+  min_annular_ring: 0.075
+  hole_clearance: 0.2    # JLC capabilities 2026-10-25: via hole to track 0.2, inner-layer via hole to copper 0.2
   min_track_width: 0.1   # Freerouting necks traces down to ~0.112 mm at 0.5 mm-pitch QFN/LGA pins; JLC multilayer min is 0.09 (docs/jlcpcb.md)
 silk_refs: false
 quantity: 5
